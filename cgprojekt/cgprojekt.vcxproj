@@ -74,14 +74,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\thirdparty\glfw\include;$(ProjectDir)..\thirdparty\glew\include;$(ProjectDir)..\thirdparty\freeimage\include;$(ProjectDir)..\thirdparty\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\thirdparty\glfw\lib;$(ProjectDir)..\thirdparty\glew\lib;$(ProjectDir)..\thirdparty\freeimage\lib;$(ProjectDir)..\thirdparty\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Schmeter\Documents\studium\cg\cgprojekt\thirdparty\glfw\lib;C:\Users\Schmeter\Documents\studium\cg\cgprojekt\thirdparty\glew\lib;C:\Users\Schmeter\Documents\studium\cg\cgprojekt\thirdparty\freeimage\lib;C:\Users\Schmeter\Documents\studium\cg\cgprojekt\thirdparty\assimp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;FreeImage.lib;assimp-vc140-mt.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -134,10 +135,58 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="main.h" />
+    <ClInclude Include="src\Aabb.h" />
+    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\BaseModel.h" />
+    <ClInclude Include="src\BaseShader.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\color.h" />
+    <ClInclude Include="src\ConstantShader.h" />
+    <ClInclude Include="src\Framebuffer.h" />
+    <ClInclude Include="src\IndexBuffer.h" />
+    <ClInclude Include="src\Lights.h" />
+    <ClInclude Include="src\LineBoxModel.h" />
+    <ClInclude Include="src\LinePlaneModel.h" />
+    <ClInclude Include="src\main.h" />
+    <ClInclude Include="src\Matrix.h" />
+    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\PhongShader.h" />
+    <ClInclude Include="src\rgbimage.h" />
+    <ClInclude Include="src\ShaderLightMapper.h" />
+    <ClInclude Include="src\ShadowMapGenerator.h" />
+    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\TriangleBoxModel.h" />
+    <ClInclude Include="src\TrianglePlaneModel.h" />
+    <ClInclude Include="src\TriangleSphereModel.h" />
+    <ClInclude Include="src\vector.h" />
+    <ClInclude Include="src\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\Aabb.cpp" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\BaseModel.cpp" />
+    <ClCompile Include="src\BaseShader.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\color.cpp" />
+    <ClCompile Include="src\ConstantShader.cpp" />
+    <ClCompile Include="src\Framebuffer.cpp" />
+    <ClCompile Include="src\IndexBuffer.cpp" />
+    <ClCompile Include="src\Lights.cpp" />
+    <ClCompile Include="src\LineBoxModel.cpp" />
+    <ClCompile Include="src\LinePlaneModel.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Matrix.cpp" />
+    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\PhongShader.cpp" />
+    <ClCompile Include="src\rgbimage.cpp" />
+    <ClCompile Include="src\ShaderLightMapper.cpp" />
+    <ClCompile Include="src\ShadowMapGenerator.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\TriangleBoxModel.cpp" />
+    <ClCompile Include="src\TrianglePlaneModel.cpp" />
+    <ClCompile Include="src\TriangleSphereModel.cpp" />
+    <ClCompile Include="src\vector.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
