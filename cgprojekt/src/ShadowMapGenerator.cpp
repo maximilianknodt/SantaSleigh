@@ -5,7 +5,7 @@
 #include "PhongShader.h"
 
 #ifdef WIN32
-#define ASSET_DIRECTORY "../../assets/"
+#define ASSET_DIRECTORY "../assets/"
 #else
 #define ASSET_DIRECTORY "../assets/"
 #endif
