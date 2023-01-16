@@ -12,7 +12,6 @@
 
 void PrintOpenGLVersion();
 
-
 int main () {
     FreeImage_Initialise();
     // start GL context and O/S window using the GLFW helper library
@@ -28,10 +27,19 @@ int main () {
     glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
     
-    const int WindowWidth = 800;
-    const int WindowHeight = 600;
+    // Initial Sizes for the Window Size
+    int WindowWidth = 800;
+    int WindowHeight = 600;
+
+    // Primary Monitor and it's Videomode to get the specific Width and Height
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* videoMode = glfwGetVideoMode(monitor);
+
+    WindowWidth = videoMode->width;
+    WindowHeight = videoMode->height;
     
-    GLFWwindow* window = glfwCreateWindow (WindowWidth, WindowHeight, "Computergrafik - Hochschule Osnabrück", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow (WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", monitor, NULL);
+    
     if (!window) {
         fprintf (stderr, "ERROR: can not open window with GLFW3\n");
         glfwTerminate();
@@ -51,6 +59,19 @@ int main () {
         Application App(window);
         App.start();
         while (!glfwWindowShouldClose (window)) {
+            // Nur fuer das Testen, um per ESC aus dem Fullscreen rauszukommen, nicht funktionsfaehig
+            int width = 1200;
+            int height = 800;
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+                glfwSetWindowMonitor(window, NULL, 0, 0, width, height, GLFW_DONT_CARE);
+                glfwGetFramebufferSize(window, &width, &height);
+                glViewport(0, 0, width, height);
+            }
+            if (glfwGetKey(window, GLFW_KEY_A)) {
+                glfwSetWindowMonitor(window, monitor, 0, 0, WindowWidth, WindowHeight, GLFW_DONT_CARE);
+                glfwGetFramebufferSize(window, &width, &height);
+                glViewport(0, 0, width, height);
+            }
             double now = glfwGetTime();
             double delta = now - lastTime;
             lastTime = now;
