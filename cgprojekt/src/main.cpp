@@ -12,62 +12,68 @@
 
 void PrintOpenGLVersion();
 
-int main () {
+int main()
+{
     FreeImage_Initialise();
     // start GL context and O/S window using the GLFW helper library
-    if (!glfwInit ()) {
-        fprintf (stderr, "ERROR: could not start GLFW3\n");
+    if (!glfwInit())
+    {
+        fprintf(stderr, "ERROR: could not start GLFW3\n");
         return 1;
     }
-    
+
 #ifdef __APPLE__
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif
-    
+
     // Initial Sizes for the Window Size
     int WindowWidth = 800;
     int WindowHeight = 600;
 
     // Primary Monitor and it's Videomode to get the specific Width and Height
-    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-    const GLFWvidmode* videoMode = glfwGetVideoMode(monitor);
+    GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
 
-    WindowWidth = videoMode->width;
-    WindowHeight = videoMode->height;
-    
-    GLFWwindow* window = glfwCreateWindow (WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", monitor, NULL);
-    
-    if (!window) {
-        fprintf (stderr, "ERROR: can not open window with GLFW3\n");
+    //WindowWidth = videoMode->width;
+    //WindowHeight = videoMode->height;
+
+    GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", NULL, NULL);
+
+    if (!window)
+    {
+        fprintf(stderr, "ERROR: can not open window with GLFW3\n");
         glfwTerminate();
         return 1;
     }
-    glfwMakeContextCurrent (window);
+    glfwMakeContextCurrent(window);
 
 #if WIN32
-	glewExperimental = GL_TRUE;
-	glewInit();
+    glewExperimental = GL_TRUE;
+    glewInit();
 #endif
 
     PrintOpenGLVersion();
-    
+
     {
-        double lastTime=0;
+        double lastTime = 0;
         Application App(window);
         App.start();
-        while (!glfwWindowShouldClose (window)) {
+        while (!glfwWindowShouldClose(window))
+        {
             // Nur fuer das Testen, um per ESC aus dem Fullscreen rauszukommen, nicht funktionsfaehig
             int width = 1200;
             int height = 800;
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE))
+            {
                 glfwSetWindowMonitor(window, NULL, 0, 0, width, height, GLFW_DONT_CARE);
                 glfwGetFramebufferSize(window, &width, &height);
                 glViewport(0, 0, width, height);
             }
-            if (glfwGetKey(window, GLFW_KEY_A)) {
+            if (glfwGetKey(window, GLFW_KEY_A))
+            {
                 glfwSetWindowMonitor(window, monitor, 0, 0, WindowWidth, WindowHeight, GLFW_DONT_CARE);
                 glfwGetFramebufferSize(window, &width, &height);
                 glViewport(0, 0, width, height);
@@ -79,21 +85,20 @@ int main () {
             glfwPollEvents();
             App.update((float)delta);
             App.draw();
-            glfwSwapBuffers (window);
+            glfwSwapBuffers(window);
         }
         App.end();
     }
-    
+
     glfwTerminate();
     return 0;
 }
 
-
 void PrintOpenGLVersion()
 {
     // get version info
-    const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
-    const GLubyte* version = glGetString (GL_VERSION); // version as a string
-    printf ("Renderer: %s\n", renderer);
-    printf ("OpenGL version supported %s\n", version);
+    const GLubyte *renderer = glGetString(GL_RENDERER); // get renderer string
+    const GLubyte *version = glGetString(GL_VERSION);   // version as a string
+    printf("Renderer: %s\n", renderer);
+    printf("OpenGL version supported %s\n", version);
 }

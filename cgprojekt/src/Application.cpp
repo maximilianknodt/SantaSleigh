@@ -35,8 +35,8 @@
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048)
 {
-	createScene();
-	//createNormalTestScene();
+	//createScene();
+	createNormalTestScene();
 	//createShadowTestScene();
 
 
@@ -210,12 +210,15 @@ void Application::createNormalTestScene()
 	// add to render list
 	Models.push_back(pModel);
 
-
-	pModel = new Model(ASSET_DIRECTORY "cube.obj", false);
+	pModel = new Model(ASSET_DIRECTORY "santasleigh.obj", true);
 	pModel->shader(new PhongShader(), true);
 	Models.push_back(pModel);
 
-
+	DirectionalLight* dl = new DirectionalLight();
+	dl->direction(Vector(0.2f, -1, 1));
+	dl->color(Color(0.25, 0.25, 0.5));
+	dl->castShadows(true);
+	ShaderLightMapper::instance().addLight(dl);
 }
 
 void Application::createShadowTestScene()
