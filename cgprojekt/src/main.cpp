@@ -30,8 +30,8 @@ int main()
 #endif
 
     // Initial Sizes for the Window Size
-    int WindowWidth = 800;
-    int WindowHeight = 600;
+    int WindowWidth = 1200;
+    int WindowHeight = 800;
 
     // Primary Monitor and it's Videomode to get the specific Width and Height
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -72,7 +72,7 @@ int main()
                 glfwGetFramebufferSize(window, &width, &height);
                 glViewport(0, 0, width, height);
             }
-            if (glfwGetKey(window, GLFW_KEY_A))
+            if (glfwGetKey(window, GLFW_KEY_F))
             {
                 glfwSetWindowMonitor(window, monitor, 0, 0, WindowWidth, WindowHeight, GLFW_DONT_CARE);
                 glfwGetFramebufferSize(window, &width, &height);

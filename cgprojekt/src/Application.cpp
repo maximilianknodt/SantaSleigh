@@ -33,16 +33,17 @@
 #endif
 
 
-Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048)
-{
+Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
 	//createScene();
 	createNormalTestScene();
 	//createShadowTestScene();
 
-
+	this->pSleigh = new Sleigh();
+	this->pSleigh->shader(new PhongShader(), true);
+	this->pSleigh->loadModel(ASSET_DIRECTORY "santasleigh.obj");
+	Models.push_back(pSleigh);
 }
-void Application::start()
-{
+void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
     glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
     glEnable(GL_CULL_FACE);
@@ -51,13 +52,38 @@ void Application::start()
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void Application::update(float dtime)
-{
+void Application::update(float dtime) {
+	float leftRight = 0;
+	float upDown = 0;
+	float shift = 0;
+	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) {
+		upDown = 1.0f;
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) {
+		upDown = -1.0f;
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) {
+		leftRight = 1.0f;
+		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
+			shift = -1;
+		}
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) {
+		leftRight = -1.0f;
+		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
+			shift = 1;
+		}
+	}
+
+	pSleigh->steer(leftRight, upDown, shift);
+	pSleigh->update(dtime);
     Cam.update();
 }
 
-void Application::draw()
-{
+void Application::draw() {
 	ShadowGenerator.generate(Models);
 	
     // 1. clear screen
@@ -75,16 +101,14 @@ void Application::draw()
     GLenum Error = glGetError();
     assert(Error==0);
 }
-void Application::end()
-{
+void Application::end() {
     for( ModelList::iterator it = Models.begin(); it != Models.end(); ++it )
         delete *it;
     
     Models.clear();
 }
 
-void Application::createScene()
-{
+void Application::createScene() {
 	Matrix m,n;
 
 	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
@@ -201,19 +225,38 @@ void Application::createScene()
 	
 }
 
-void Application::createNormalTestScene()
-{
-	pModel = new LinePlaneModel(10, 10, 10, 10);
-	ConstantShader* pConstShader = new ConstantShader();
-	pConstShader->color(Color(0, 0, 0));
-	pModel->shader(pConstShader, true);
-	// add to render list
-	Models.push_back(pModel);
+void Application::createNormalTestScene() {
+	Matrix m, n;
 
-	pModel = new Model(ASSET_DIRECTORY "santasleigh.obj", true);
+	// Umgebung als Cube: Skybox
+	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	pModel->shader(new PhongShader(), true);
+	pModel->shadowCaster(false);
 	Models.push_back(pModel);
 
+	
+	
+	// Objekt Rentier, muss ebenfalls als separate Klasse ausgelagert werden
+	pModel = new Model(ASSET_DIRECTORY "deer.obj", true);
+	pModel->shader(new PhongShader(), true);
+	n.translation(0, 0, 10);
+	m.scale(0.02);
+	pModel->transform(n * m);
+	Models.push_back(pModel);
+	/* Bewegung eines Objekts
+	* 
+	*/
+
+	/* Voxel Rentier, kann nicht verwendet werden TODO: entfernen
+	pModel = new Model(ASSET_DIRECTORY "Moose.obj", true);
+	pModel->shader(new PhongShader(), true);
+	n.translation(0, 0, 20);
+	m.scale(0.3);
+	pModel->transform(n * m);
+	Models.push_back(pModel);
+	*/
+
+	// Globale Lichtquelle
 	DirectionalLight* dl = new DirectionalLight();
 	dl->direction(Vector(0.2f, -1, 1));
 	dl->color(Color(0.25, 0.25, 0.5));
@@ -221,8 +264,7 @@ void Application::createNormalTestScene()
 	ShaderLightMapper::instance().addLight(dl);
 }
 
-void Application::createShadowTestScene()
-{
+void Application::createShadowTestScene() {
 	pModel = new Model(ASSET_DIRECTORY "shadowcube.obj", false);
 	pModel->shader(new PhongShader(), true);
 	Models.push_back(pModel);

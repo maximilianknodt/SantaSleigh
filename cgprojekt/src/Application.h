@@ -18,6 +18,7 @@
 #include "indexbuffer.h"
 #include "basemodel.h"
 #include "ShadowMapGenerator.h"
+#include "Sleigh.h"
 
 class Application
 {
@@ -37,6 +38,8 @@ protected:
     GLFWwindow* pWindow;
 	BaseModel* pModel;
 	ShadowMapGenerator ShadowGenerator;
+    Sleigh* pSleigh;
+    Model* pSantaSleigh;
 };
 
 #endif /* Application_hpp */

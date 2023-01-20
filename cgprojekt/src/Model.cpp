@@ -73,17 +73,14 @@ bool Model::load(const char *ModelFile, bool FitSize)
 /// mesh::mTextureCoords = UV-Texturkoordinaten
 /// <param name="pScene"></param>
 /// <param name="FitSize"></param>
-void Model::loadMeshes(const aiScene *pScene, bool FitSize)
-{
-
+void Model::loadMeshes(const aiScene *pScene, bool FitSize) {
     this->calcBoundingBox(pScene, this->BoundingBox);
 
     this->MeshCount = pScene->mNumMeshes;
     this->pMeshes = new Mesh[this->MeshCount];
 
     // Jedes Mesh der Szene behandeln
-    for (int i = 0; i < this->MeshCount; i++)
-    {
+    for (int i = 0; i < this->MeshCount; i++) {
 
         Mesh &mesh = this->pMeshes[i];
         aiMesh *aiMesh = pScene->mMeshes[i];
@@ -95,7 +92,7 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize)
         // Texturkoordinaten- und Positionsvectoren des aiMeshes befuellt
         // Auf die Reihenfolge achten: Noramel, Textur, Position
         mesh.VB.begin();
-        for (int j = 0; j < aiVertCount; j++){
+        for (int j = 0; j < aiVertCount; j++) {
             if (aiMesh->HasNormals()){
                 aiVector3D aiVNorm = aiMesh->mNormals[j];
                 mesh.VB.addNormal(aiVNorm.x, aiVNorm.y, aiVNorm.z);
@@ -126,7 +123,7 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize)
         // Der Indexbuffer des aktuellen Model::Mesh wird mit den Inidices fuer die Dreiecke befuellt
         unsigned int faceCount = aiMesh->mNumFaces;
         mesh.IB.begin();
-        for (int j = 0; j < faceCount; j++){
+        for (int j = 0; j < faceCount; j++) {
             aiFace face = aiMesh->mFaces[j];
             int faceInds = face.mNumIndices;
 
@@ -135,8 +132,7 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize)
                 continue;
 
             // Dreiecke erzeugen (0-1-2, 0-2-3, 0-4-5, ...)
-            for (int v = 0; v < faceInds - 2; v++)
-            {
+            for (int v = 0; v < faceInds - 2; v++) {
                 mesh.IB.addIndex(face.mIndices[0]);
                 mesh.IB.addIndex(face.mIndices[v + 1]);
                 mesh.IB.addIndex(face.mIndices[v + 2]);
@@ -148,12 +144,19 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize)
     }
 
     // Skallierung des Meshes (z.Z. immer true)
-    if (FitSize)
-    {
+    if (FitSize) {
+        int factor = 5;
         Matrix matrix;
         Vector diagonale = this->BoundingBox.Max - this->BoundingBox.Min;
         float length = diagonale.length();
-        matrix.scale(5 / length);
+        std::cout << "Length: " << length << std::endl;
+        
+        if (length < factor) {
+            matrix.scale(length / factor);
+        }
+        else {
+            matrix.scale(factor / length);
+        }
         this->transform(matrix);
     }
 }

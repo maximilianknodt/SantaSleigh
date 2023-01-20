@@ -1,0 +1,128 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 02.01.2014 18:01:09
+
+newmtl Material__282
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.4471 0.3569 0.3255
+	Kd 0.4471 0.3569 0.3255
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/deer02.bmp
+	map_Kd ./texture/deer/deer02.bmp
+
+newmtl Material__283
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.4471 0.3569 0.3255
+	Kd 0.4471 0.3569 0.3255
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/deer01.bmp
+	map_Kd ./texture/deer/deer01.bmp
+
+newmtl Material__295
+	Ns 19.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.9608 0.9333 0.9176
+	Kd 0.9608 0.9333 0.9176
+	Ks 0.2970 0.2970 0.2970
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/deereye.bmp
+	map_Kd ./texture/deer/deereye.bmp
+
+newmtl Material__334
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.4471 0.3569 0.3255
+	Kd 0.4471 0.3569 0.3255
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/deer03.bmp
+	map_Kd ./texture/deer/deer03.bmp
+
+newmtl Material__321
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.4471 0.3569 0.3255
+	Kd 0.4471 0.3569 0.3255
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/deer02.bmp
+	map_Kd ./texture/deer/deer02.bmp
+
+newmtl Material__346
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/dg04.bmp
+	map_Kd ./texture/deer/dg04.bmp
+
+newmtl Material__359
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5880 0.5880 0.5880
+	Kd 0.5880 0.5880 0.5880
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/dg03.bmp
+	map_Kd ./texture/deer/dg03.bmp
+
+newmtl Material__383
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.2078 0.1412 0.1176
+	Kd 0.2078 0.1412 0.1176
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/dg02.bmp
+	map_Kd ./texture/deer/dg02.bmp
+
+newmtl Material__419
+	Ns 17.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.6510 0.4902 0.3647
+	Kd 0.6510 0.4902 0.3647
+	Ks 0.1800 0.1800 0.1800
+	Ke 0.0000 0.0000 0.0000
+	map_Ka ./texture/deer/dg01.bmp
+	map_Kd ./texture/deer/dg01.bmp
