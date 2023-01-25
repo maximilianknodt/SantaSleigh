@@ -7,9 +7,9 @@ class Sleigh : public BaseModel {
 public:
 	Sleigh();
 	virtual ~Sleigh();
-	bool loadModel(const char* santassleigh);
+	bool loadModel(const char* sleigh);
 	void steer(float leftRight, float upDown, float shift);
-	void update(float dtime);
+	void update(float dtime,const Matrix mDeer);
 	virtual void draw(const BaseCamera& Cam);
 
 protected:

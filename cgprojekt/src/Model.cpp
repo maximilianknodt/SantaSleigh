@@ -90,7 +90,7 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize) {
 
         // Der Vertexbuffer des aktuellen Model::Mesh wird mit den Normalen-,
         // Texturkoordinaten- und Positionsvectoren des aiMeshes befuellt
-        // Auf die Reihenfolge achten: Noramel, Textur, Position
+        // Auf die Reihenfolge achten: Normale, Textur, Position
         mesh.VB.begin();
         for (int j = 0; j < aiVertCount; j++) {
             if (aiMesh->HasNormals()){
@@ -120,7 +120,7 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize) {
         }
         mesh.VB.end();
 
-        // Der Indexbuffer des aktuellen Model::Mesh wird mit den Inidices fuer die Dreiecke befuellt
+        // Der Indexbuffer des aktuellen Model::Mesh wird mit den Indices fuer die Dreiecke befuellt
         unsigned int faceCount = aiMesh->mNumFaces;
         mesh.IB.begin();
         for (int j = 0; j < faceCount; j++) {
@@ -143,20 +143,24 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize) {
         this->pMeshes[i] = mesh;
     }
 
-    // Skallierung des Meshes (z.Z. immer true)
+    // Skallierung des Meshes (default true)
     if (FitSize) {
-        int factor = 5;
         Matrix matrix;
-        Vector diagonale = this->BoundingBox.Max - this->BoundingBox.Min;
-        float length = diagonale.length();
-        std::cout << "Length: " << length << std::endl;
-        
-        if (length < factor) {
-            matrix.scale(length / factor);
-        }
-        else {
-            matrix.scale(factor / length);
-        }
+        float max = 10;
+        float min = 0;
+
+        float bboxDiagonale = (Vector(max) - Vector(min)).length();
+        float modelDiagonale = (this->BoundingBox.Max - this->BoundingBox.Min).length();
+
+        std::cout << "bboxDiagonale: " << bboxDiagonale << std::endl;
+        std::cout << "modelDiagonale: " << modelDiagonale << std::endl;
+
+        float factor = bboxDiagonale / modelDiagonale;
+
+        std::cout << "Factor: " << factor << std::endl;
+
+        matrix.scale(factor);
+
         this->transform(matrix);
     }
 }
@@ -237,10 +241,9 @@ void Model::calcBoundingBox(const aiScene *pScene, AABB &Box)
                 min = vec;
             if (max < vec)
                 max = vec;
-
-            Box = AABB(Vector(min.x, min.y, min.z), Vector(max.x, max.y, max.z));
         }
     }
+    Box = AABB(Vector(min.x, min.y, min.z), Vector(max.x, max.y, max.z));
 }
 
 void Model::loadNodes(const aiScene *pScene)

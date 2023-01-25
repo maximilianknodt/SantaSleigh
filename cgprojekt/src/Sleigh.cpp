@@ -3,6 +3,7 @@
 
 Sleigh::Sleigh() {
 	this->sleigh = new Model();
+
 	this->leftRight = 0;
 	this->upDown = 0;
 	this->shift = 0;
@@ -12,10 +13,12 @@ Sleigh::~Sleigh() {
 	delete this->sleigh;
 }
 
-bool Sleigh::loadModel(const char* santaSleigh) {
+bool Sleigh::loadModel(const char* sleigh) {
 	this->sleigh->shader(new PhongShader(), true);
-	this->sleigh->load(santaSleigh, true);
-	this->transform(Matrix().scale(0.02));
+	this->sleigh->load(sleigh, true);
+
+	this->transform(this->sleigh->transform());
+
 	return true;
 }
 
@@ -25,19 +28,18 @@ void Sleigh::steer(float leftRight, float upDown, float shift) {
 	this->shift = shift;
 }
 
-void Sleigh::update(float dtime) {
+void Sleigh::update(float dtime, const Matrix mDeer) {
 	Matrix mForward, mLeftRight, mUpDown, mShift;
 
-	this->transform(transform());
-
-	mForward.translation(0.0, 0.0, 0);
-	mLeftRight.rotationY(this->leftRight * dtime);
+	mForward.translation(0.0, 0.0, 0 * dtime);
 	mUpDown.rotationX(this->upDown * dtime);
+	mLeftRight.rotationY(this->leftRight * dtime);
 	mShift.rotationZ(this->shift * dtime);
 
-	Matrix matrix = transform() * mForward * mLeftRight * mUpDown * mShift;
+	Matrix matrix = mForward * mShift * mLeftRight * mUpDown;
 
-	this->transform(matrix);
+	this->transform(mDeer);
+
 	this->sleigh->transform(transform());
 }
 

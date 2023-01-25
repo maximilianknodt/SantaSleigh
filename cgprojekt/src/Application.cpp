@@ -38,10 +38,7 @@ Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NU
 	createNormalTestScene();
 	//createShadowTestScene();
 
-	this->pSleigh = new Sleigh();
-	this->pSleigh->shader(new PhongShader(), true);
-	this->pSleigh->loadModel(ASSET_DIRECTORY "santasleigh.obj");
-	Models.push_back(pSleigh);
+	
 }
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
@@ -53,33 +50,21 @@ void Application::start() {
 }
 
 void Application::update(float dtime) {
-	float leftRight = 0;
-	float upDown = 0;
-	float shift = 0;
-	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) {
-		upDown = 1.0f;
-	}
+	float upDown = 0;		// xRot
+	float leftRight = 0;	// yRot
+	float shift = 0;		// zRot
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) {
-		upDown = -1.0f;
-	}
+	this->keyboardActivity(upDown, leftRight, shift);
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) {
-		leftRight = 1.0f;
-		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			shift = -1;
-		}
-	}
+	//pDeer->steer(leftRight, upDown, shift);
+	//pSleigh->steer(leftRight, upDown, shift);
+	
+	//pDeer->update(dtime);
+	//pSleigh->update(dtime, this->pDeer->transform());
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) {
-		leftRight = -1.0f;
-		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			shift = 1;
-		}
-	}
-
-	pSleigh->steer(leftRight, upDown, shift);
-	pSleigh->update(dtime);
+	this->pSantaSleigh->steer(upDown, leftRight, shift);
+	this->pSantaSleigh->update(dtime);
+	
     Cam.update();
 }
 
@@ -91,8 +76,7 @@ void Application::draw() {
 
 	ShaderLightMapper::instance().activate();
     // 2. setup shaders and draw models
-    for( ModelList::iterator it = Models.begin(); it != Models.end(); ++it )
-    {
+    for( ModelList::iterator it = Models.begin(); it != Models.end(); ++it ) {
         (*it)->draw(Cam);
     }
 	ShaderLightMapper::instance().deactivate();
@@ -106,6 +90,30 @@ void Application::end() {
         delete *it;
     
     Models.clear();
+}
+/// <summary>
+/// Sets the values for the rotation around the three axes
+/// and returns them in [xRot], [yRot] and [zRot]
+/// </summary>
+/// <param name="xRot"></param>
+/// <param name="yRot"></param>
+/// <param name="zRot"></param>
+void Application::keyboardActivity(float& xRot, float& yRot, float& zRot) {
+	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.0f; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.0f; }
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) {
+		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
+			zRot = -2;
+		}
+		else yRot = 1.0f;
+	}
+	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) {
+		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
+			zRot = 2;
+		}
+		else yRot = -1.0f;
+	}
 }
 
 void Application::createScene() {
@@ -234,26 +242,30 @@ void Application::createNormalTestScene() {
 	pModel->shadowCaster(false);
 	Models.push_back(pModel);
 
-	
-	
-	// Objekt Rentier, muss ebenfalls als separate Klasse ausgelagert werden
-	pModel = new Model(ASSET_DIRECTORY "deer.obj", true);
-	pModel->shader(new PhongShader(), true);
-	n.translation(0, 0, 10);
-	m.scale(0.02);
-	pModel->transform(n * m);
+	// create LineGrid model with constant color shader
+	pModel = new LinePlaneModel(10, 10, 10, 10);
+	ConstantShader* pConstShader = new ConstantShader();
+	pConstShader->color(Color(1, 1, 1));
+	pModel->shader(pConstShader, true);
 	Models.push_back(pModel);
-	/* Bewegung eines Objekts
-	* 
-	*/
 
-	/* Voxel Rentier, kann nicht verwendet werden TODO: entfernen
-	pModel = new Model(ASSET_DIRECTORY "Moose.obj", true);
-	pModel->shader(new PhongShader(), true);
-	n.translation(0, 0, 20);
-	m.scale(0.3);
-	pModel->transform(n * m);
-	Models.push_back(pModel);
+	this->pSantaSleigh = new SantaSleigh();
+	this->pSantaSleigh->shader(new PhongShader(), true);
+	this->pSantaSleigh->loadModels(
+		ASSET_DIRECTORY "deer.obj",
+		ASSET_DIRECTORY "santasleigh.obj");
+	Models.push_back(pSantaSleigh);
+
+	/*
+	this->pSleigh = new Sleigh();
+	this->pSleigh->shader(new PhongShader(), true);
+	this->pSleigh->loadModel(ASSET_DIRECTORY "santasleigh.obj");
+	Models.push_back(pSleigh);	
+
+	this->pDeer = new Deer();
+	this->pDeer->shader(new PhongShader(), true);
+	this->pDeer->loadModel(ASSET_DIRECTORY "deer.obj");
+	Models.push_back(pDeer);
 	*/
 
 	// Globale Lichtquelle

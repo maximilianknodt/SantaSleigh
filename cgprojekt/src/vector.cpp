@@ -6,6 +6,8 @@
 
 Vector::Vector(float x, float y, float z) : X(x), Y(y), Z(z) {}
 
+Vector::Vector(float f) : X(f), Y(f), Z(f) {}
+
 Vector::Vector() {}
 
 /**
