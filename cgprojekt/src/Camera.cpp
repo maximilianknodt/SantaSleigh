@@ -10,8 +10,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Camera::Camera(GLFWwindow* pWin) : m_Position(0.0f,5.0f,5.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1), m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0), WindowWidth(800), WindowHeight(600), pWindow(pWin)
-{
+Camera::Camera(GLFWwindow* pWin) :
+    m_Position(0.0f,5.0f,5.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1),
+    m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0), WindowWidth(800), WindowHeight(600), pWindow(pWin) {
     if(pWindow)
         glfwGetWindowSize(pWindow, &WindowWidth, &WindowHeight);
     
@@ -19,60 +20,47 @@ Camera::Camera(GLFWwindow* pWin) : m_Position(0.0f,5.0f,5.0f), m_Target(0.0f,0.0
     m_ProjMatrix.perspective((float)M_PI*65.0f/180.0f, (float)WindowWidth/(float)WindowHeight, 0.045f, 1000.0f);
 }
 
-Vector Camera::position() const
-{
+Vector Camera::position() const {
     return m_Position + m_Panning + m_Zoom + m_Rotation;
 }
-Vector Camera::target() const
-{
+
+Vector Camera::target() const {
     return m_Target + m_Panning;
 }
-Vector Camera::up() const
-{
+
+Vector Camera::up() const {
     return m_Up;
 }
 
-void Camera::setPosition( const Vector& Pos)
-{
+void Camera::setPosition( const Vector& Pos) {
     m_Position = Pos;
     m_Panning = m_Rotation = m_Zoom = Vector(0,0,0);
-
-
 }
-void Camera::setTarget( const Vector& Target)
-{
+
+void Camera::setTarget( const Vector& Target) {
     m_Target = Target;
     m_Panning = Vector(0,0,0);
 }
-void Camera::setUp( const Vector& Up)
-{
+
+void Camera::setUp( const Vector& Up) {
     m_Up = Up;
 }
 
-void Camera::mouseInput( int x, int y, int Button, int State)
-{
-
-    if(State == GLFW_PRESS)
-    {
+void Camera::mouseInput( int x, int y, int Button, int State) {
+    if(State == GLFW_PRESS) {
         if(m_LastMouseX==-1) m_LastMouseX = x;
         if(m_LastMouseY==-1) m_LastMouseY = y;
         
-        if( Button == GLFW_MOUSE_BUTTON_LEFT )
-        {
+        if( Button == GLFW_MOUSE_BUTTON_LEFT ) {
             rotate((float)x, (float)y );
         }
-        else if( Button == GLFW_MOUSE_BUTTON_RIGHT)
-        {
+        else if( Button == GLFW_MOUSE_BUTTON_RIGHT) {
             pan( (float)(m_LastMouseX-x)*0.01f, (float)(m_LastMouseY-y)*0.01f );
         }
-        else if( Button == GLFW_MOUSE_BUTTON_MIDDLE)
-        {
-            zoom( (float)(m_LastMouseY-y)*0.01f );
-            
+        else if( Button == GLFW_MOUSE_BUTTON_MIDDLE) {
+            zoom( (float)(m_LastMouseY-y)*0.01f ); 
         }
-    }
-    else
-    {
+    } else {
         m_Position += m_Panning + m_Zoom + m_Rotation;
         m_Target += m_Panning;
         m_Panning = Vector(0,0,0);
@@ -80,12 +68,10 @@ void Camera::mouseInput( int x, int y, int Button, int State)
         m_Rotation = Vector(0,0,0);
         m_LastMouseX = -1;
         m_LastMouseY = -1;
-
     }
 }
 
-void Camera::pan( float dx, float dy)
-{
+void Camera::pan( float dx, float dy) {
     // calculate panning-plane
     
     Vector aDir = m_Target-m_Position;
@@ -96,14 +82,12 @@ void Camera::pan( float dx, float dy)
     m_Panning = aRight * dx + aUp * dy;
 }
 
-void Camera::zoom( float dz)
-{
+void Camera::zoom( float dz) {
     Vector aDir = m_Target-m_Position;
     float Dist = aDir.length();
     aDir.normalize();
   
-    if( Dist-dz <= 1.0f)
-    {
+    if( Dist-dz <= 1.0f) {
         m_Zoom = aDir * (Dist-1.0f);
         return;
     }
@@ -111,8 +95,7 @@ void Camera::zoom( float dz)
      m_Zoom = aDir * dz;
 }
 
-void Camera::rotate( float x, float y )
-{
+void Camera::rotate( float x, float y ) {
     Vector po = getVSpherePos((float) m_LastMouseX, (float)m_LastMouseY);
     Vector pn = getVSpherePos(x, y);
     
@@ -147,8 +130,7 @@ void Camera::rotate( float x, float y )
     m_Rotation = RotDiffW - (m_Position-m_Target);
 }
 
-Vector Camera::rotateAxisAngle( Vector v, Vector n, float a)
-{
+Vector Camera::rotateAxisAngle( Vector v, Vector n, float a) {
     float co = cos(a);
     float si = sin(a);
     
@@ -163,38 +145,32 @@ Vector Camera::rotateAxisAngle( Vector v, Vector n, float a)
     return o;
 }
 
-const Matrix& Camera::getViewMatrix() const
-{
+const Matrix& Camera::getViewMatrix() const {
     return m_ViewMatrix;
 }
 
-const Matrix& Camera::getProjectionMatrix() const
-{
+const Matrix& Camera::getProjectionMatrix() const {
     return m_ProjMatrix;
 }
 
 
 
-Vector Camera::getVSpherePos( float x, float y)
-{
+Vector Camera::getVSpherePos( float x, float y) {
     Vector p( 1.0f*x/(float)WindowWidth*2.0f - 1.0f, 1.0f*y/(float)WindowHeight*2.0f -1.0f, 0);
     p.Y = -p.Y;
     
     float sqrLen = p.lengthSquared();
 
-    if( sqrLen <= 1.0f)
-    {
+    if( sqrLen <= 1.0f) {
         p.Z = sqrt( 1- sqrLen);
-    }
-    else
+    } else
         p.normalize();
     
     return p;
     
 }
 
-void Camera::updateMouseInput()
-{
+void Camera::updateMouseInput() {
     double xpos, ypos;
     glfwGetCursorPos(pWindow, &xpos, &ypos);
     if( glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -207,8 +183,7 @@ void Camera::updateMouseInput()
         mouseInput((int)xpos, (int)ypos, GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE);
 }
 
-void Camera::update()
-{
+void Camera::update() {
     updateMouseInput();
     
     Vector Pos = position(); //m_Position + m_Panning + m_Zoom + m_Rotation;
