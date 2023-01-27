@@ -28,17 +28,17 @@ int main () {
 #endif
     
     // Initial Sizes for the Window Size
-    int WindowWidth = 800;
-    int WindowHeight = 600;
+    int WindowWidth = 1200;
+    int WindowHeight = 800;
 
     // Primary Monitor and it's Videomode to get the specific Width and Height
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* videoMode = glfwGetVideoMode(monitor);
 
-    WindowWidth = videoMode->width;
-    WindowHeight = videoMode->height;
+    //WindowWidth = videoMode->width;
+    //WindowHeight = videoMode->height;
     
-    GLFWwindow* window = glfwCreateWindow (WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", monitor, NULL);
+    GLFWwindow* window = glfwCreateWindow (WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", NULL, NULL);
     
     if (!window) {
         fprintf (stderr, "ERROR: can not open window with GLFW3\n");
