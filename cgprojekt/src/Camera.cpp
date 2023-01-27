@@ -10,7 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-Camera::Camera(GLFWwindow* pWin) : m_Position(0.0f,5.0f,5.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1), m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0), WindowWidth(640), WindowHeight(480), pWindow(pWin)
+Camera::Camera(GLFWwindow* pWin) : m_Position(0.0f,5.0f,5.0f), m_Target(0.0f,0.0f,0.0f), m_Up(0.0f,1.0f,0.0f), m_LastMouseX(-1), m_LastMouseY(-1), m_Panning(0,0,0), m_Zoom(0,0,0), m_Rotation(0,0,0), WindowWidth(800), WindowHeight(600), pWindow(pWin)
 {
     if(pWindow)
         glfwGetWindowSize(pWindow, &WindowWidth, &WindowHeight);

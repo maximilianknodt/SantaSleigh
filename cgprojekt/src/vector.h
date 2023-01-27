@@ -10,6 +10,7 @@ public:
     float Z;
     
     Vector(float x, float y, float z);
+    Vector(float f);
     Vector();
     
     float dot(const Vector& v) const;

@@ -19,9 +19,11 @@
 #include "basemodel.h"
 #include "ShadowMapGenerator.h"
 #include "terrain.h"
+#include "SantaSleigh.h"
+#include "Sleigh.h"
+#include "Deer.h"
 
-class Application
-{
+class Application {
 public:
     typedef std::list<BaseModel*> ModelList;
     Application(GLFWwindow* pWin);
@@ -33,12 +35,16 @@ protected:
 	void createScene();
 	void createNormalTestScene();
 	void createShadowTestScene();
+    void keyboardActivity(float& xRot, float& yRot, float& zRot);
     Camera Cam;
     ModelList Models;
     GLFWwindow* pWindow;
 	BaseModel* pModel;
 	ShadowMapGenerator ShadowGenerator;
     Terrain* pTerrain;
+    Sleigh* pSleigh;
+    Deer* pDeer;
+    SantaSleigh* pSantaSleigh;
 };
 
 #endif /* Application_hpp */

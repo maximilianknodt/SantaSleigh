@@ -94,6 +94,13 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TerrainShader.h">
+    <ClInclude Include="src\SantaSleigh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Deer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Sleigh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -177,6 +184,13 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TerrainShader.cpp">
+    <ClCompile Include="src\SantaSleigh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Deer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Sleigh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
