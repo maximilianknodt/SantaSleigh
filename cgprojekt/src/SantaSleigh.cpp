@@ -34,7 +34,7 @@ void SantaSleigh::steer(float upDown, float leftRight, float shift) {
 void SantaSleigh::update(float dtime) {
 	Matrix mForward, mLeftRight, mUpDown, mShift;
 
-	mForward.translation(0.0, 0.0, 1 * dtime);
+	mForward.translation(0.0, 0.0, 0 * dtime);
 	mUpDown.rotationX(this->upDown * dtime);
 	mLeftRight.rotationY(this->leftRight * dtime);
 	mShift.rotationZ(this->shift * dtime);

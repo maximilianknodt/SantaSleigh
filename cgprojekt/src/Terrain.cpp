@@ -18,10 +18,11 @@ Terrain::~Terrain()
 }
 
 Vector Terrain::generateVector(const RGBImage* image, int x, int y) {
+    
     Color c = image->getPixelColor(x, y);
     float yCor = this->height() * c.R;
-    float xCor = (float) x / (float)image->width() * (float)width() - (float)width() / 2.0f; //max width
-    float zCor = (float) y / (float)image->height() * (float)depth() - (float)depth() / 2.0f; //max depth
+    float xCor = ((float)x / (float)image->width() * (float)width()) - (float)width() / 2.0f; //max width
+    float zCor = ((float)y / (float)image->height() * (float)depth()) - (float)depth() / 2.0f; //max depth
     return Vector(xCor, yCor, zCor);
 }
 
@@ -49,7 +50,7 @@ bool Terrain::load( const char* HeightMap, const char* DetailMap1, const char* D
     for(int y = 0; y < image->height(); y++) {
         for(int x = 0; x < image->width(); x++) {
             Vector v = generateVector(image, x, y);
-            
+
             std::vector<Vector> vertices;
             if(x > 0) vertices.push_back(generateVector(image, x - 1, y) - v); // a
             if(x > 0 && y > 0) vertices.push_back(generateVector(image, x - 1, y - 1) - v); // b
@@ -115,6 +116,6 @@ void Terrain::applyShaderParameter()
     Shader->mixTex(&MixTex);
     for(int i=0; i<2; i++)
         Shader->detailTex(i,&DetailTex[i]);
-    Shader->scaling(Size);
+    //Shader->scaling(Size);
     Shader->kFaktor(100);
 }

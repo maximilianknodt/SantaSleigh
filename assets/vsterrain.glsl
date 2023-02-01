@@ -14,10 +14,10 @@ uniform vec3 Scaling;
 
 void main()
 {
-    // Exercise 1
-    // TODO: apply scaling on terrain model..
     Position = (ModelMat * VertexPos).xyz * Scaling;
     Normal = (ModelMat * vec4(VertexNormal.xyz,0)).xyz * 1/Scaling;
+    // Position = (ModelMat * VertexPos).xyz;
+    // Normal = (ModelMat * vec4(VertexNormal.xyz,0)).xyz;
     Texcoord = VertexTexcoord;
     gl_Position = ModelViewProjMat * vec4(Position, 1.0);
 }

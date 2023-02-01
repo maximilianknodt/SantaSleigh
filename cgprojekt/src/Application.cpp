@@ -35,8 +35,8 @@
 
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
-	//createScene();
-	createNormalTestScene();
+	createScene();
+	//createNormalTestScene();
 	//createShadowTestScene();
 
 	
@@ -118,11 +118,18 @@ void Application::keyboardActivity(float& xRot, float& yRot, float& zRot) {
 }
 
 void Application::createScene() {
-	Matrix m,n;
+	pModel = new LinePlaneModel(20, 20, 20, 20);
+	ConstantShader* pConstShader = new ConstantShader();
+	pConstShader->color(Color(1, 1, 1));
+	pModel->shader(pConstShader, true);
+	Models.push_back(pModel);
 
 	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	pModel->shader(new PhongShader(), true);
 	pModel->shadowCaster(false);
+	Matrix s;
+	s.scale(5);
+	pModel->transform(s);
 	Models.push_back(pModel);
 
 	pTerrain = new Terrain();
@@ -135,6 +142,17 @@ void Application::createScene() {
 	pTerrain->height(10);
 	Models.push_back(pTerrain);
 
+	this->pSantaSleigh = new SantaSleigh();
+	this->pSantaSleigh->shader(new PhongShader(), true);
+	this->pSantaSleigh->loadModels(
+		ASSET_DIRECTORY "deer.obj",
+		ASSET_DIRECTORY "santasleigh.obj");
+	Models.push_back(pSantaSleigh);
+
+	Matrix m;
+	m.translation(40, 4, 40);
+	this->pSantaSleigh->transform(m);
+
 	// directional lights
 	DirectionalLight* dl = new DirectionalLight();
 	dl->direction(Vector(0.2f, -1, 1));
@@ -146,93 +164,6 @@ void Application::createScene() {
 	Vector a = Vector(1, 0, 0.1f);
 	float innerradius = 45;
 	float outerradius = 60;
-	
-	// point lights
-	PointLight* pl = new PointLight();
-	pl->position(Vector(-1.5, 3, 10));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(5.0f, 3, 10));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(-1.5, 3, 28));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(5.0f, 3, 28));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(-1.5, 3, -8));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(5.0f, 3, -8));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-	
-	
-	// spot lights
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, 10));
-	sl->color(c);
-	sl->direction(Vector(1,-4,0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-
-	sl = new SpotLight();
-	sl->position(Vector(5.0f, 3, 10));
-	sl->color(c);
-	sl->direction(Vector(-1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-
-	sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, 28));
-	sl->color(c);
-	sl->direction(Vector(1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-
-	sl = new SpotLight();
-	sl->position(Vector(5.0f, 3, 28));
-	sl->color(c);
-	sl->direction(Vector(-1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-	
-	sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, -8));
-	sl->color(c);
-	sl->direction(Vector(1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-	
-	sl = new SpotLight();
-	sl->position(Vector(5.0f, 3, -8));
-	sl->color(c);
-	sl->direction(Vector(-1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
 	
 }
 
