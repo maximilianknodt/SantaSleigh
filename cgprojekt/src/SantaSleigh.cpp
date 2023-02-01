@@ -5,6 +5,7 @@ SantaSleigh::SantaSleigh() {
 	this->sleigh = new Model();
 	this->deer = new Model();
 	this->lastPos = Vector(0, 0, 0);
+	this->lastForward = this->transform().forward();
 
 	this->lastTransform = this->deer->transform();
 

@@ -73,44 +73,19 @@ void Application::update(float dtime) {
 	// Letzte Position des Objekts setzen
 	this->pSantaSleigh->setLastPosition(currentObjPos);
 
-
-	// Versuch der Winkelberechnung
-	Matrix lTrans, cTrans;
-	lTrans = this->pSantaSleigh->getLastTransform();
-	cTrans = this->pSantaSleigh->transform();
-	Vector cX, lX, cY, lY, cZ, lZ;
-	cX = cTrans.right();
-	lX = lTrans.right();
-	cY = cTrans.up();
-	lY = lTrans.up();
-	cZ = cTrans.forward();
-	lZ = lTrans.forward();
-	float angleX = cX.dot(lX) / (cX.length() * lX.length());
-	float angleY = cY.dot(lY) / (cY.length() * lY.length());
-	float angleZ = cZ.dot(lZ) / (cZ.length() * lZ.length());
-	float dist = (Cam.position() - currentObjPos).length();
-	//float seitenlaenge = 2 * dist.length() * sin(angle/2);
-	Vector cp;
-	cp.X = Cam.position().X + cos(angleX) * dist;
-	cp.Y = Cam.position().Y + cos(angleY) * dist;
-	cp.Z = Cam.position().Z + cos(angleZ) * dist;
-	
-
-
 	// Folgt, aber Wellenbewegung
 	Matrix m, n;
-	n.translation(Vector(0, 2, -10));
+	n.translation(Vector(0, 4, -10));
 	m = pSantaSleigh->transform() * n;
 
 
 	Vector objCam = pSantaSleigh->transform().forward();
-	objCam = objCam * dist;
 	//std::cout << "X: " << objCam.X << "\tY: " << objCam.Y << "\tZ: " << objCam.Z << std::endl;
 
 	
-
-	Cam.setPosition(camPos);
+	Cam.setPosition(m.translation());
 	Cam.setTarget(currentObjPos);
+	Cam.setUp(m.up());
 
 
 	Vector forw = Cam.target() - Cam.position();
@@ -157,20 +132,11 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot) {
 	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1; }
 	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1; }
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) {
-		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			zRot = -1;
-		}
-		else {
-			yRot = 1;
-		}
-	}
-	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) {
-		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			zRot = 1;
-		}
-		else yRot = -1; //(M_PI / 360)
-	}
+	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) { yRot = 1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) { yRot = -1; }
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_Q)) { zRot = 0.5; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_E)) { zRot = -0.5; }
 }
 
 void Application::createScene() {

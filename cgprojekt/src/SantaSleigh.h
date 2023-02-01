@@ -18,14 +18,16 @@ public:
 	Vector getPosition();
 	Vector getLastPosition();
 	void setLastPosition(const Vector lastPos);
-
+	void setLastForward(const Vector lastForward) { this->lastForward = lastForward; };
+	Vector getLastForward() { return this->lastForward; };
 protected:
 	Model* deer;
 	Model* sleigh;
 	
 	Matrix lastTransform;
 	Vector lastPos;
-	
+	Vector lastForward;
+
 	float leftRight;
 	float upDown;
 	float shift;
