@@ -12,9 +12,20 @@ public:
 	void update(float dtime);
 	virtual void draw(const BaseCamera& Cam);
 
+	Matrix getDeerTransform();
+	Matrix getLastTransform();
+
+	Vector getPosition();
+	Vector getLastPosition();
+	void setLastPosition(const Vector lastPos);
+
 protected:
-	Model* sleigh;
 	Model* deer;
+	Model* sleigh;
+	
+	Matrix lastTransform;
+	Vector lastPos;
+	
 	float leftRight;
 	float upDown;
 	float shift;

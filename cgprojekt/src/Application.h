@@ -34,7 +34,7 @@ protected:
 	void createScene();
 	void createNormalTestScene();
 	void createShadowTestScene();
-    void keyboardActivity(float& xRot, float& yRot, float& zRot);
+    void keyboardInput(float& xRot, float& yRot, float& zRot);
     Camera Cam;
     ModelList Models;
     GLFWwindow* pWindow;

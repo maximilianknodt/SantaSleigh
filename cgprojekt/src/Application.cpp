@@ -53,17 +53,71 @@ void Application::update(float dtime) {
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
 	float shift = 0;		// zRot
-	this->keyboardActivity(upDown, leftRight, shift);
+	this->keyboardInput(upDown, leftRight, shift);
 
 	this->pSantaSleigh->steer(upDown, leftRight, shift);
 	this->pSantaSleigh->update(dtime);
 
-	Matrix mDistance, mPosition;
-	mDistance.translation(0, 2, -12);
-	mPosition = pSantaSleigh->transform() * mDistance;
+
+	Vector v = pSantaSleigh->transform().translation();
+	//std::cout << "X: " << v.X << "\tY: " << v.Y << "\tZ: " << v.Z << std::endl;
+
+
+	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
+	float smoothness = 1;
+	Vector currentObjPos, lastObjPos, travelDist, camPos;
+	currentObjPos = this->pSantaSleigh->getPosition();
+	lastObjPos = this->pSantaSleigh->getLastPosition();
+	travelDist = currentObjPos - lastObjPos;
+	camPos = Cam.position() + (travelDist * smoothness);
+	// Letzte Position des Objekts setzen
+	this->pSantaSleigh->setLastPosition(currentObjPos);
+
+
+	// Versuch der Winkelberechnung
+	Matrix lTrans, cTrans;
+	lTrans = this->pSantaSleigh->getLastTransform();
+	cTrans = this->pSantaSleigh->transform();
+	Vector cX, lX, cY, lY, cZ, lZ;
+	cX = cTrans.right();
+	lX = lTrans.right();
+	cY = cTrans.up();
+	lY = lTrans.up();
+	cZ = cTrans.forward();
+	lZ = lTrans.forward();
+	float angleX = cX.dot(lX) / (cX.length() * lX.length());
+	float angleY = cY.dot(lY) / (cY.length() * lY.length());
+	float angleZ = cZ.dot(lZ) / (cZ.length() * lZ.length());
+	float dist = (Cam.position() - currentObjPos).length();
+	//float seitenlaenge = 2 * dist.length() * sin(angle/2);
+	Vector cp;
+	cp.X = Cam.position().X + cos(angleX) * dist;
+	cp.Y = Cam.position().Y + cos(angleY) * dist;
+	cp.Z = Cam.position().Z + cos(angleZ) * dist;
 	
-	Cam.setPosition(mPosition.translation());
-	Cam.setTarget(pSantaSleigh->transform().translation());
+
+
+	// Folgt, aber Wellenbewegung
+	Matrix m, n;
+	n.translation(Vector(0, 2, -10));
+	m = pSantaSleigh->transform() * n;
+
+
+	Vector objCam = pSantaSleigh->transform().forward();
+	objCam = objCam * dist;
+	//std::cout << "X: " << objCam.X << "\tY: " << objCam.Y << "\tZ: " << objCam.Z << std::endl;
+
+	
+
+	Cam.setPosition(camPos);
+	Cam.setTarget(currentObjPos);
+
+
+	Vector forw = Cam.target() - Cam.position();
+	//std::cout << "currentObjPos: " << currentObjPos.X << " | " << currentObjPos.Y << " | " << currentObjPos.Z << std::endl;
+	//std::cout << "forw: " << forw.X << " | " << forw.Y << " | " << forw.Z << std::endl;
+
+
     Cam.update();
 }
 
@@ -99,24 +153,23 @@ void Application::end() {
 /// <param name="xRot"></param>
 /// <param name="yRot"></param>
 /// <param name="zRot"></param>
-void Application::keyboardActivity(float& xRot, float& yRot, float& zRot) {
-	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.0; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.0; }
+void Application::keyboardInput(float& xRot, float& yRot, float& zRot) {
+	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1; }
 
 	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) {
 		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			zRot = -1.0;
+			zRot = -1;
 		}
 		else {
-			yRot = 1.0;
-			std::cout << yRot << std::endl;
+			yRot = 1;
 		}
 	}
 	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) {
 		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			zRot = 1.0;
+			zRot = 1;
 		}
-		else yRot = -1.0;
+		else yRot = -1; //(M_PI / 360)
 	}
 }
 
@@ -125,20 +178,23 @@ void Application::createScene() {
 	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	pModel->shader(new PhongShader(), true);
 	pModel->shadowCaster(false);
-	pModel->transform(pModel->transform() * Matrix().scale(2));
+	pModel->transform(pModel->transform() * Matrix().scale(5));
 	Models.push_back(pModel);
 
-	/*
+
 	pModel = new Model(ASSET_DIRECTORY "city_blocks.obj", false);
 	pModel->shader(new PhongShader(), true);
 	Models.push_back(pModel);
-	*/
+
 
 	this->pSantaSleigh = new SantaSleigh();
 	this->pSantaSleigh->shader(new PhongShader(), true);
 	this->pSantaSleigh->loadModels(
 		ASSET_DIRECTORY "deer.obj",
 		ASSET_DIRECTORY "santasleigh.obj");
+	this->pSantaSleigh->transform(
+		this->pSantaSleigh->transform()
+		* Matrix().translation(0, 50, 0));
 	Models.push_back(pSantaSleigh);
 
 	// Globale Lichtquelle
