@@ -53,9 +53,10 @@ void Application::update(float dtime) {
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
 	float shift = 0;		// zRot
-	this->keyboardInput(upDown, leftRight, shift);
+	bool drive = false;
+	this->keyboardInput(upDown, leftRight, shift, drive);
 
-	this->pSantaSleigh->steer(upDown, leftRight, shift);
+	this->pSantaSleigh->steer(upDown, leftRight, shift, drive);
 	this->pSantaSleigh->update(dtime);
 
 
@@ -128,15 +129,19 @@ void Application::end() {
 /// <param name="xRot"></param>
 /// <param name="yRot"></param>
 /// <param name="zRot"></param>
-void Application::keyboardInput(float& xRot, float& yRot, float& zRot) {
+void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive) {
 	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1; }
 	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1; }
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) { yRot = 1; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) { yRot = -1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_Q)) { yRot = 1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_E)) { yRot = -1; }
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_Q)) { zRot = 0.5; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_E)) { zRot = -0.5; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) { zRot = 1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) { zRot = -1; }
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_SPACE)) {
+		drive = true;
+	}
 }
 
 void Application::createScene() {

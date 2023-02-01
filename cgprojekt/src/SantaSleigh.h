@@ -8,7 +8,7 @@ public:
 	SantaSleigh();
 	virtual ~SantaSleigh();
 	bool loadModels(const char* deer, const char* sleigh);
-	void steer(float leftRight, float upDown, float shift);
+	void steer(float leftRight, float upDown, float shift, bool drive);
 	void update(float dtime);
 	virtual void draw(const BaseCamera& Cam);
 
@@ -20,6 +20,8 @@ public:
 	void setLastPosition(const Vector lastPos);
 	void setLastForward(const Vector lastForward) { this->lastForward = lastForward; };
 	Vector getLastForward() { return this->lastForward; };
+	float getSpeed() { return this->speed; };
+	void setSpeed(float speed) { this->speed = speed; };
 protected:
 	Model* deer;
 	Model* sleigh;
@@ -31,6 +33,11 @@ protected:
 	float leftRight;
 	float upDown;
 	float shift;
+
+	bool drive;
+	float speed;
+	float maxSpeed;
+	float acceleration;
 };
 
 #endif

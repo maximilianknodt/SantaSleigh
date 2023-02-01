@@ -12,6 +12,9 @@ SantaSleigh::SantaSleigh() {
 	this->leftRight = 0;
 	this->upDown = 0;
 	this->shift = 0;
+	this->speed = 0;
+	this->maxSpeed = 25.0f;
+	this->acceleration = 2.0f;
 }
 
 SantaSleigh::~SantaSleigh() {
@@ -31,27 +34,25 @@ bool SantaSleigh::loadModels(const char* sleigh, const char* deer) {
 	return true;
 }
 
-void SantaSleigh::steer(float upDown, float leftRight, float shift) {
+void SantaSleigh::steer(float upDown, float leftRight, float shift, bool drive) {
 	this->upDown = upDown;
 	this->leftRight = leftRight;
 	this->shift = shift;
+	this->drive = drive;
 }
 
 void SantaSleigh::update(float dtime) {
-	/*
-	Matrix mForward, mLeftRight, mUpDown, mShift;
-
-	mForward.translation(0.0, 0.0, 10 * dtime);
-	mUpDown.rotationX(this->upDown * dtime);
-	mLeftRight.rotationY(this->leftRight * dtime);
-	mShift.rotationZ(this->shift * dtime);
-	Matrix matrix = mForward * mShift * mLeftRight * mUpDown;
-	*/
-
 	this->lastTransform = this->deer->transform();
 
+	if (this->drive == true) {
+		if (this->speed < this->maxSpeed) {
+			this->speed += this->acceleration * dtime;
+		}
+	}
+
+
 	Matrix mYPR, mForward;
-	mForward.translation(0.0, 0.0, 5 * dtime);
+	mForward.translation(0.0, 0.0, this->speed * dtime);
 	mYPR.rotationYawPitchRoll(leftRight * dtime, upDown * dtime, shift * dtime);
 	Matrix matrix = mForward * mYPR;
 
