@@ -49,8 +49,9 @@ void Application::createScene() {
 	Models.push_back(pModel);
 
 
-	pModel = new Model(ASSET_DIRECTORY "city_blocks.obj", false);
+	pModel = new Model(ASSET_DIRECTORY "city_models.obj", false);
 	pModel->shader(new PhongShader(), true);
+	pModel->transform(pModel->transform() * Matrix().scale(8));
 	Models.push_back(pModel);
 
 
