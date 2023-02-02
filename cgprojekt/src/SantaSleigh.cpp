@@ -7,14 +7,12 @@ SantaSleigh::SantaSleigh() {
 	this->lastPos = Vector(0, 0, 0);
 	this->lastForward = this->transform().forward();
 
-	this->lastTransform = this->deer->transform();
-
 	this->leftRight = 0;
 	this->upDown = 0;
 	this->shift = 0;
 	this->speed = 0;
-	this->maxSpeed = 25.0f;
-	this->acceleration = 2.0f;
+	this->maxSpeed = 80.0;
+	this->acceleration = 10.0;
 }
 
 SantaSleigh::~SantaSleigh() {
@@ -42,19 +40,15 @@ void SantaSleigh::steer(float upDown, float leftRight, float shift, bool drive) 
 }
 
 void SantaSleigh::update(float dtime) {
-	this->lastTransform = this->deer->transform();
+	Matrix mYPR, mForward, matrix;
 
-	if (this->drive == true) {
-		if (this->speed < this->maxSpeed) {
-			this->speed += this->acceleration * dtime;
-		}
-	}
-
-
-	Matrix mYPR, mForward;
-	mForward.translation(0.0, 0.0, this->speed * dtime);
 	mYPR.rotationYawPitchRoll(leftRight * dtime, upDown * dtime, shift * dtime);
-	Matrix matrix = mForward * mYPR;
+
+	Vector forward = this->transform().forward().normalize();
+	this->upgradeSpeed(forward.Y, dtime);
+
+	mForward.translation(0.0, 0.0, this->speed * dtime);
+	matrix = mForward * mYPR;
 
 	this->transform(transform() * matrix);
 
@@ -62,11 +56,42 @@ void SantaSleigh::update(float dtime) {
 	this->sleigh->transform(transform());
 }
 
+void SantaSleigh::upgradeSpeed(float forwardY, float dtime) {
+	float gravity = this->fakeGravityInfluence(forwardY);
+
+	if (this->drive == true) {
+		if (this->speed < this->maxSpeed) {
+			this->speed += (this->acceleration + gravity) * dtime;
+		}
+	}
+	else {
+		if (this->speed > 0) {
+			this->speed -= (this->acceleration + gravity) * dtime;
+		}
+	}
+}
+
+float SantaSleigh::fakeGravityInfluence(float forwardY) {
+	float gravity = 0.0;
+	float fy = abs(forwardY);
+
+	if (fy > 0.0) {
+		if (fy <= 0.25) gravity = 0.75;
+		else if (fy > 0.25 && fy < 0.5) gravity = 1.5;
+		else if (fy > 0.5 && fy < 0.75) gravity = 2.25;
+		else if (fy > 0.75 && fy <= 1.0) gravity = 3.5;
+	}
+	if (forwardY > 0) gravity *= (-1);
+
+	return gravity;
+}
+
 void SantaSleigh::draw(const BaseCamera& cam) {
 	this->sleigh->draw(cam);
 	this->deer->draw(cam);
 }
 
+// ggf. fuer weichere Camerabewegung nutzbar
 Vector SantaSleigh::getPosition() {
 	return this->transform().translation();
 }
@@ -77,12 +102,4 @@ Vector SantaSleigh::getLastPosition() {
 
 void SantaSleigh::setLastPosition(const Vector lastPos) {
 	this->lastPos = lastPos;
-}
-
-Matrix SantaSleigh::getDeerTransform() {
-	return this->deer->transform();
-}
-
-Matrix SantaSleigh::getLastTransform() {
-	return this->lastTransform;
 }
