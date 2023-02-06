@@ -383,21 +383,36 @@ Matrix& Matrix::invert()
     m33 = (((num5 * num27) - (num4 * num25)) + (num3 * num24)) * num;
     return *this;
 }
-Matrix& Matrix::lookAt(const Vector& Target, const Vector& Up, const Vector& Position )
-{
+/// <summary>
+/// Creates the ViewMatrix of the Camera object by creating
+/// the forward, right and the 'real' up vector of the camera.
+/// </summary>
+/// <param name="Target"></param>
+/// <param name="Up"></param>
+/// <param name="Position"></param>
+/// <returns></returns>
+Matrix& Matrix::lookAt(const Vector& Target, const Vector& Up, const Vector& Position ){
+    // Forward Vector by Vector subtraction
     Vector f = Target-Position;
     f.normalize();
+    // Supplied Up vector, not the 'real' one yet
     Vector u = Up;
     u.normalize();
+    // Right vector by cross product
     Vector r = f.cross(u);
     r.normalize();
+    // The Camera's 'real' Up vector
     u = r.cross(f);
+
+    // orthogonal matrices part (3x3) -> inverse = transponiert
+    // Position vector via scalar product with the Camera position
     m00 = r.X;   m01 = r.Y;   m02 = r.Z;   m03 = -(r.dot(Position));
     m10 = u.X;   m11 = u.Y;   m12 = u.Z;   m13 = -(u.dot(Position));
     m20 = -f.X;  m21 = -f.Y;  m22 = -f.Z;  m23 = (f.dot(Position));
     m30 = 0;     m31 = 0;     m32 = 0;     m33 = 1;
     return *this;
 }
+
 Matrix& Matrix::perspective(float Fovy, float AspectRatio, float NearPlane, float FarPlane )
 {
     assert(NearPlane<FarPlane);

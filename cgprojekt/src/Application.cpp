@@ -40,6 +40,39 @@ Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NU
 	//createShadowTestScene();
 }
 
+void Application::createScene() {
+	// Umgebung als Cube: Skybox
+	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
+	pModel->shader(new PhongShader(), true);
+	pModel->shadowCaster(false);
+	pModel->transform(pModel->transform() * Matrix().scale(5));
+	Models.push_back(pModel);
+
+
+	pModel = new Model(ASSET_DIRECTORY "city_models.obj", false);
+	pModel->shader(new PhongShader(), true);
+	pModel->transform(pModel->transform() * Matrix().scale(8));
+	Models.push_back(pModel);
+
+
+	this->pSantaSleigh = new SantaSleigh();
+	this->pSantaSleigh->shader(new PhongShader(), true);
+	this->pSantaSleigh->loadModels(
+		ASSET_DIRECTORY "deer.obj",
+		ASSET_DIRECTORY "santasleigh.obj");
+	this->pSantaSleigh->transform(
+		this->pSantaSleigh->transform()
+		* Matrix().translation(0, 50, 0));
+	Models.push_back(pSantaSleigh);
+
+	// Globale Lichtquelle
+	DirectionalLight* dl = new DirectionalLight();
+	dl->direction(Vector(0.2f, -1, 1));
+	dl->color(Color(0.25, 0.25, 0.5));
+	dl->castShadows(true);
+	ShaderLightMapper::instance().addLight(dl);
+}
+
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
     glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
@@ -59,9 +92,7 @@ void Application::update(float dtime) {
 	this->pSantaSleigh->steer(upDown, leftRight, shift, drive);
 	this->pSantaSleigh->update(dtime);
 
-
-	Vector v = pSantaSleigh->transform().translation();
-
+	// ggf. fuer weichere Camerabewegung nutzbar ------------------------------
 	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
 	float smoothness = 1;
 	Vector currentObjPos, lastObjPos, travelDist, camPos;
@@ -71,20 +102,16 @@ void Application::update(float dtime) {
 	camPos = Cam.position() + (travelDist * smoothness);
 	// Letzte Position des Objekts setzen
 	this->pSantaSleigh->setLastPosition(currentObjPos);
+	// ------------------------------------------------------------------------
 
-	// Folgt, aber Wellenbewegung
-	Matrix m, n;
-	n.translation(Vector(0, 4, -10));
-	m = pSantaSleigh->transform() * n;
+	Matrix mCam, mDistance;
+	mDistance.translation(Vector(0, 4, -15));
+	mCam = this->pSantaSleigh->transform() * mDistance;
 
-	Vector objCam = pSantaSleigh->transform().forward();
-	
-	Cam.setPosition(m.translation());
+	Cam.setPosition(mCam.translation());
 	Cam.setTarget(currentObjPos);
-	Cam.setUp(m.up());
+	Cam.setUp(mCam.up());
 
-
-	Vector forw = Cam.target() - Cam.position();
     Cam.update();
 }
 
@@ -121,48 +148,87 @@ void Application::end() {
 /// <param name="yRot"></param>
 /// <param name="zRot"></param>
 void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive) {
-	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.2; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.2; }
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_Q)) { yRot = 1; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_E)) { yRot = -1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) { zRot = -1.5; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) { zRot = 1.5; }
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) { zRot = 1; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) { zRot = -1; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_Q)) { yRot = 1.2; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_E)) { yRot = -1.2; }
 
 	if (glfwGetKey(this->pWindow, GLFW_KEY_SPACE)) {
 		drive = true;
 	}
 }
 
-void Application::createScene() {
-	// Umgebung als Cube: Skybox
+void Application::createNormalTestScene() {
+	Matrix m, n;
+
 	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	pModel->shader(new PhongShader(), true);
 	pModel->shadowCaster(false);
-	pModel->transform(pModel->transform() * Matrix().scale(5));
 	Models.push_back(pModel);
 
 
-	pModel = new Model(ASSET_DIRECTORY "city_blocks.obj", false);
+	pModel = new Model(ASSET_DIRECTORY "scene.dae", false);
 	pModel->shader(new PhongShader(), true);
+	m.translation(10, 0, -10);
+	pModel->transform(m);
 	Models.push_back(pModel);
 
 
-	this->pSantaSleigh = new SantaSleigh();
-	this->pSantaSleigh->shader(new PhongShader(), true);
-	this->pSantaSleigh->loadModels(
-		ASSET_DIRECTORY "deer.obj",
-		ASSET_DIRECTORY "santasleigh.obj");
-	this->pSantaSleigh->transform(
-		this->pSantaSleigh->transform()
-		* Matrix().translation(0, 50, 0));
-	Models.push_back(pSantaSleigh);
-
-	// Globale Lichtquelle
+	// directional lights
 	DirectionalLight* dl = new DirectionalLight();
 	dl->direction(Vector(0.2f, -1, 1));
 	dl->color(Color(0.25, 0.25, 0.5));
 	dl->castShadows(true);
 	ShaderLightMapper::instance().addLight(dl);
+
+	Color c = Color(1.0f, 0.7f, 1.0f);
+	Vector a = Vector(1, 0, 0.1f);
+	float innerradius = 45;
+	float outerradius = 60;
+
+	// point lights
+	PointLight* pl = new PointLight();
+	pl->position(Vector(-1.5, 3, 10));
+	pl->color(c);
+	pl->attenuation(a);
+	ShaderLightMapper::instance().addLight(pl);
+
+	// spot lights
+	SpotLight* sl = new SpotLight();
+	sl->position(Vector(-1.5, 3, 10));
+	sl->color(c);
+	sl->direction(Vector(1, -4, 0));
+	sl->innerRadius(innerradius);
+	sl->outerRadius(outerradius);
+	ShaderLightMapper::instance().addLight(sl);
+}
+
+void Application::createShadowTestScene() {
+	pModel = new Model(ASSET_DIRECTORY "shadowcube.obj", false);
+	pModel->shader(new PhongShader(), true);
+	Models.push_back(pModel);
+
+	pModel = new Model(ASSET_DIRECTORY "bunny.dae", false);
+	pModel->shader(new PhongShader(), true);
+	Models.push_back(pModel);
+	
+	// directional lights
+	DirectionalLight* dl = new DirectionalLight();
+	dl->direction(Vector(0, -1, -1));
+	dl->color(Color(0.5, 0.5, 0.5));
+	dl->castShadows(true);
+	ShaderLightMapper::instance().addLight(dl);
+	
+	SpotLight* sl = new SpotLight();
+	sl->position(Vector(2, 2, 0));
+	sl->color(Color(0.5, 0.5, 0.5));
+	sl->direction(Vector(-1, -1, 0));
+	sl->innerRadius(10);
+	sl->outerRadius(13);
+	sl->castShadows(true);
+	ShaderLightMapper::instance().addLight(sl);
 }

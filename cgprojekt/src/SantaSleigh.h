@@ -12,23 +12,27 @@ public:
 	void update(float dtime);
 	virtual void draw(const BaseCamera& Cam);
 
-	Matrix getDeerTransform();
-	Matrix getLastTransform();
-
+	// ggf. fuer weichere Camerabewegung nutzbar
 	Vector getPosition();
 	Vector getLastPosition();
 	void setLastPosition(const Vector lastPos);
+
 	void setLastForward(const Vector lastForward) { this->lastForward = lastForward; };
 	Vector getLastForward() { return this->lastForward; };
+
 	float getSpeed() { return this->speed; };
-	void setSpeed(float speed) { this->speed = speed; };
-	Model* getDeer() { return this->deer; };
+	void setSpeed(float newSpeed) { this->speed = newSpeed; };
+	void setAcceleration(float newAccel) { this->acceleration = newAccel; };
+
+	float fakeGravityInfluence(float forwardY);
+	void upgradeSpeed(float forwardY, float dtime);
+
 protected:
 	Model* deer;
 	Model* sleigh;
 	
-	Matrix lastTransform;
 	Vector lastPos;
+
 	Vector lastForward;
 
 	float leftRight;
