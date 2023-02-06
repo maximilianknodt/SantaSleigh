@@ -62,6 +62,8 @@ bool Model::load(const char *ModelFile, bool FitSize)
     loadMaterials(pScene);
     loadNodes(pScene);
 
+    std::cout << "Nodes: " << pScene->mRootNode->mNumChildren << std::endl;
+
     return true;
 }
 
@@ -217,28 +219,24 @@ void Model::loadMaterials(const aiScene *pScene)
 
 void Model::calcBoundingBox(const aiScene *pScene, AABB &Box)
 {
-    aiVector3D min(FLT_MAX, FLT_MAX, FLT_MAX);
-    aiVector3D max(FLT_MIN, FLT_MIN, FLT_MIN);
+    float minX, minY, minZ, maxX, maxY, maxZ;
+    minX = minY = minZ = FLT_MAX;
+    maxX = maxY = maxZ = FLT_MIN;
 
-    // Jedes Mesh der Scene durchsuchen
-    unsigned int psMCount = pScene->mNumMeshes;
-    for (int i = 0; i < psMCount; i++)
-    {
-        aiMesh *aim = pScene->mMeshes[i];
-        unsigned int mVertCount = aim->mNumVertices;
-
-        // Jeden Vertice des Meshes durchsuchen
-        for (int j = 0; j < mVertCount; j++)
-        {
-            aiVector3D vec = aim->mVertices[j];
-
-            if (vec < min)
-                min = vec;
-            if (max < vec)
-                max = vec;
+    MeshCount = pScene->mNumMeshes;
+    for (size_t i = 0; i < MeshCount; i++) {
+        for (size_t j = 0; j < pScene->mMeshes[i]->mNumVertices; j++) {
+            aiVector3D v = pScene->mMeshes[i]->mVertices[j];
+            if (minX > v.x) minX = v.x;
+            if (minY > v.y) minY = v.y;
+            if (minZ > v.z) minZ = v.z;
+            if (maxX < v.x) maxX = v.x;
+            if (maxY < v.y) maxY = v.y;
+            if (maxZ < v.z) maxZ = v.z;
         }
     }
-    Box = AABB(Vector(min.x, min.y, min.z), Vector(max.x, max.y, max.z));
+
+    Box = AABB(minX, minY, minZ, maxX, maxY, maxZ);
 }
 
 void Model::loadNodes(const aiScene *pScene)

@@ -6,6 +6,7 @@ SantaSleigh::SantaSleigh() {
 	this->deer = new Model();
 	this->lastPos = Vector(0, 0, 0);
 	this->lastForward = this->transform().forward();
+	this->startPos = Vector(0, 50, 0);
 
 	this->leftRight = 0;
 	this->upDown = 0;
@@ -37,6 +38,11 @@ void SantaSleigh::steer(float upDown, float leftRight, float shift, bool drive) 
 	this->leftRight = leftRight;
 	this->shift = shift;
 	this->drive = drive;
+}
+
+void SantaSleigh::reset() {
+	this->transform(Matrix().translation(this->startPos));
+	this->setSpeed(0.0f);
 }
 
 void SantaSleigh::update(float dtime) {

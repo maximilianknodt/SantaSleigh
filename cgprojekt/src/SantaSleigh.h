@@ -26,13 +26,14 @@ public:
 
 	float fakeGravityInfluence(float forwardY);
 	void upgradeSpeed(float forwardY, float dtime);
-
-protected:
 	Model* deer;
 	Model* sleigh;
+	Vector getStartPos() { return this->startPos; };
+	void reset();
+protected:
 	
 	Vector lastPos;
-
+	Vector startPos;
 	Vector lastForward;
 
 	float leftRight;

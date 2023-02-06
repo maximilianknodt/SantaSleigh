@@ -21,6 +21,7 @@
 #include "SantaSleigh.h"
 #include "Sleigh.h"
 #include "Deer.h"
+#include "LineBoxModel.h"
 
 class Application {
 public:
@@ -35,6 +36,8 @@ protected:
 	void createNormalTestScene();
 	void createShadowTestScene();
     void keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive);
+    bool checkCollision(BaseModel* model_a, BaseModel* model_b);
+
     Camera Cam;
     ModelList Models;
     GLFWwindow* pWindow;
@@ -43,6 +46,8 @@ protected:
     Sleigh* pSleigh;
     Deer* pDeer;
     SantaSleigh* pSantaSleigh;
+    LineBoxModel* pSleighBox;
+    Model* pCity;
 };
 
 #endif /* Application_hpp */
