@@ -14,7 +14,7 @@ SantaSleigh::SantaSleigh() {
 	this->shift = 0;
 	this->speed = 0;
 	this->maxSpeed = 25.0f;
-	this->acceleration = 2.0f;
+	this->acceleration = 6.0f;
 }
 
 SantaSleigh::~SantaSleigh() {
@@ -49,7 +49,6 @@ void SantaSleigh::update(float dtime) {
 			this->speed += this->acceleration * dtime;
 		}
 	}
-
 
 	Matrix mYPR, mForward;
 	mForward.translation(0.0, 0.0, this->speed * dtime);

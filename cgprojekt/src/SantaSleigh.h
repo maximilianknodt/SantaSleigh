@@ -22,6 +22,7 @@ public:
 	Vector getLastForward() { return this->lastForward; };
 	float getSpeed() { return this->speed; };
 	void setSpeed(float speed) { this->speed = speed; };
+	Model* getDeer() { return this->deer; };
 protected:
 	Model* deer;
 	Model* sleigh;

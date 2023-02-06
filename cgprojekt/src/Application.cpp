@@ -61,8 +61,6 @@ void Application::update(float dtime) {
 
 
 	Vector v = pSantaSleigh->transform().translation();
-	//std::cout << "X: " << v.X << "\tY: " << v.Y << "\tZ: " << v.Z << std::endl;
-
 
 	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
 	float smoothness = 1;
@@ -79,10 +77,7 @@ void Application::update(float dtime) {
 	n.translation(Vector(0, 4, -10));
 	m = pSantaSleigh->transform() * n;
 
-
 	Vector objCam = pSantaSleigh->transform().forward();
-	//std::cout << "X: " << objCam.X << "\tY: " << objCam.Y << "\tZ: " << objCam.Z << std::endl;
-
 	
 	Cam.setPosition(m.translation());
 	Cam.setTarget(currentObjPos);
@@ -90,10 +85,6 @@ void Application::update(float dtime) {
 
 
 	Vector forw = Cam.target() - Cam.position();
-	//std::cout << "currentObjPos: " << currentObjPos.X << " | " << currentObjPos.Y << " | " << currentObjPos.Z << std::endl;
-	//std::cout << "forw: " << forw.X << " | " << forw.Y << " | " << forw.Z << std::endl;
-
-
     Cam.update();
 }
 
@@ -174,75 +165,4 @@ void Application::createScene() {
 	dl->color(Color(0.25, 0.25, 0.5));
 	dl->castShadows(true);
 	ShaderLightMapper::instance().addLight(dl);
-}
-
-void Application::createNormalTestScene() {
-	Matrix m, n;
-
-	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
-	pModel->shader(new PhongShader(), true);
-	pModel->shadowCaster(false);
-	Models.push_back(pModel);
-
-
-	pModel = new Model(ASSET_DIRECTORY "scene.dae", false);
-	pModel->shader(new PhongShader(), true);
-	m.translation(10, 0, -10);
-	pModel->transform(m);
-	Models.push_back(pModel);
-
-
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-
-	Color c = Color(1.0f, 0.7f, 1.0f);
-	Vector a = Vector(1, 0, 0.1f);
-	float innerradius = 45;
-	float outerradius = 60;
-
-	// point lights
-	PointLight* pl = new PointLight();
-	pl->position(Vector(-1.5, 3, 10));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	// spot lights
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, 10));
-	sl->color(c);
-	sl->direction(Vector(1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-}
-
-void Application::createShadowTestScene() {
-	pModel = new Model(ASSET_DIRECTORY "shadowcube.obj", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-
-	pModel = new Model(ASSET_DIRECTORY "bunny.dae", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-	
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0, -1, -1));
-	dl->color(Color(0.5, 0.5, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-	
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(2, 2, 0));
-	sl->color(Color(0.5, 0.5, 0.5));
-	sl->direction(Vector(-1, -1, 0));
-	sl->innerRadius(10);
-	sl->outerRadius(13);
-	sl->castShadows(true);
-	ShaderLightMapper::instance().addLight(sl);
 }

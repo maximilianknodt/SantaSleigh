@@ -152,12 +152,7 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize) {
         float bboxDiagonale = (Vector(max) - Vector(min)).length();
         float modelDiagonale = (this->BoundingBox.Max - this->BoundingBox.Min).length();
 
-        std::cout << "bboxDiagonale: " << bboxDiagonale << std::endl;
-        std::cout << "modelDiagonale: " << modelDiagonale << std::endl;
-
         float factor = bboxDiagonale / modelDiagonale;
-
-        std::cout << "Factor: " << factor << std::endl;
 
         matrix.scale(factor);
 
