@@ -30,6 +30,7 @@ public:
     bool load(const char* ModelFile, bool FitSize=true);
     virtual void draw(const BaseCamera& Cam);
     const AABB& boundingBox() const { return BoundingBox; }
+    void transformBoundingBox(Matrix m);
     
 protected: // protected types
     struct Mesh {

@@ -22,10 +22,12 @@
 #include "Sleigh.h"
 #include "Deer.h"
 #include "LineBoxModel.h"
+#include "City.h"
 
 class Application {
 public:
     typedef std::list<BaseModel*> ModelList;
+    typedef std::list<BaseModel*> StarList;
     Application(GLFWwindow* pWin);
     void start();
     void update(float dtime);
@@ -37,6 +39,8 @@ protected:
 	void createShadowTestScene();
     void keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive);
     bool checkCollision(BaseModel* model_a, BaseModel* model_b);
+    void drawBoundingBox(AABB box);
+    Matrix randomTranslation();
 
     Camera Cam;
     ModelList Models;
@@ -47,7 +51,8 @@ protected:
     Deer* pDeer;
     SantaSleigh* pSantaSleigh;
     LineBoxModel* pSleighBox;
-    Model* pCity;
+    StarList Stars;
+    City* pCity;
 };
 
 #endif /* Application_hpp */

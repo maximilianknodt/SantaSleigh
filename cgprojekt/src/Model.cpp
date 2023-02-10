@@ -239,6 +239,10 @@ void Model::calcBoundingBox(const aiScene *pScene, AABB &Box)
     Box = AABB(minX, minY, minZ, maxX, maxY, maxZ);
 }
 
+void Model::transformBoundingBox(Matrix m) {
+    this->BoundingBox = this->boundingBox().transform(m);
+}
+
 void Model::loadNodes(const aiScene *pScene)
 {
     deleteNodes(&RootNode);

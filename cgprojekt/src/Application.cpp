@@ -24,6 +24,8 @@
 #include "triangleboxmodel.h"
 #include "model.h"
 #include "ShaderLightmapper.h"
+#include <iostream>
+#include <random>
 
 
 #ifdef WIN32
@@ -32,6 +34,8 @@
 #define ASSET_DIRECTORY "../assets/"
 #endif
 
+#define MAX_STARS 10
+#define MAX_BUILDINGS 10
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
 	createScene();
@@ -48,21 +52,18 @@ void Application::createScene() {
 	pModel->transform(pModel->transform() * Matrix().scale(5));
 	Models.push_back(pModel);
 
-	this->pCity = new Model(ASSET_DIRECTORY "3d-model.obj", false);
-	this->pCity->shader(new PhongShader(), true);
-	//pModel->transform(pModel->transform() * Matrix().scale(8));
-	Models.push_back(this->pCity);
+	for (int i = 0; i < MAX_STARS; i++) {
+		pModel = new Model(ASSET_DIRECTORY "Gold_Star.obj", false);
+		pModel->shader(new PhongShader(), true);
+		pModel->transform(pModel->transform() * this->randomTranslation());
+		pModel->transform(pModel->transform() * Matrix().scale(0.1));
+		Stars.push_back(pModel);
+		Models.push_back(pModel);
+	}
 
-	float width = this->pCity->boundingBox().Max.X - this->pCity->boundingBox().Min.X;
-	float height = this->pCity->boundingBox().Max.Y - this->pCity->boundingBox().Min.Y;
-	float depth = this->pCity->boundingBox().Max.Z - this->pCity->boundingBox().Min.Z;
-
-	pModel = new LineBoxModel(width, height, depth);
-	ConstantShader* pConstantShader = new ConstantShader();
-	pConstantShader->color(Color(0, 1, 0));
-	pModel->shader(pConstantShader, true);
-	pModel->transform(Matrix().translation(0, height / 2, 0));
-	Models.push_back(pModel);
+	this->pCity = new City();
+	this->pCity->loadModels(ASSET_DIRECTORY "3d-model.obj", 4, 4, 10);
+	Models.push_back(pCity);
 
 	this->pSantaSleigh = new SantaSleigh();
 	this->pSantaSleigh->shader(new PhongShader(), true);
@@ -74,19 +75,10 @@ void Application::createScene() {
 		* Matrix().translation(this->pSantaSleigh->getStartPos()));
 	Models.push_back(pSantaSleigh);
 
-
-	width = pSantaSleigh->sleigh->boundingBox().Max.X - pSantaSleigh->sleigh->boundingBox().Min.X;
-	height = pSantaSleigh->sleigh->boundingBox().Max.Y - pSantaSleigh->sleigh->boundingBox().Min.Y;
-	depth = pSantaSleigh->sleigh->boundingBox().Max.Z - pSantaSleigh->sleigh->boundingBox().Min.Z;
-
-	this->pSleighBox = new LineBoxModel(width, height, depth);
-	pConstantShader = new ConstantShader();
-	pConstantShader->color(Color(0, 1, 0));
-	pSleighBox->shader(pConstantShader, true);
-	pSleighBox->transform(this->pSantaSleigh->transform() * Matrix().translation(0, height / 2, 0));
-	Models.push_back(pSleighBox);
-
-
+	/* AABB sleighBox = this->pSantaSleigh->sleigh->boundingBox();
+	float height = pSantaSleigh->sleigh->boundingBox().Max.Y - pSantaSleigh->sleigh->boundingBox().Min.Y;
+	this->drawBoundingBox(this->pSantaSleigh->sleigh->boundingBox().transform(this->pSantaSleigh->transform() * Matrix().translation(0, height / 2, 0))); */
+	 
 	// Globale Lichtquelle
 	DirectionalLight* dl = new DirectionalLight();
 	dl->direction(Vector(0.2f, -1, 1));
@@ -113,7 +105,6 @@ void Application::update(float dtime) {
 
 	this->pSantaSleigh->steer(upDown, leftRight, shift, drive);
 	this->pSantaSleigh->update(dtime);
-	this->pSleighBox->transform(this->pSantaSleigh->transform());
 	// ggf. fuer weichere Camerabewegung nutzbar ------------------------------
 	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
 	float smoothness = 1;
@@ -130,8 +121,23 @@ void Application::update(float dtime) {
 	mDistance.translation(Vector(0, 4, -15));
 	mCam = this->pSantaSleigh->transform() * mDistance;
 
-	if (this->checkCollision(this->pSantaSleigh->sleigh, this->pCity)) {
+	BaseModel* collided;
+	for (BaseModel* model : Stars) {
+		if(this->checkCollision(this->pSantaSleigh->sleigh, model)) {
+			std::cout << "Collision with star" << std::endl;
+			collided = model;
+		}
+	}
+	Stars.remove(collided);
+	Models.remove(collided);
+
+	/* if (this->checkCollision(this->pSantaSleigh->sleigh, this->pCity)) {
 		this->pSantaSleigh->reset();
+	} */
+	for (BaseModel* model : this->pCity->getModels()) {
+		if (this->checkCollision(this->pSantaSleigh->sleigh, model)) {
+			this->pSantaSleigh->reset();
+		}
 	}
 
 	Cam.setPosition(mCam.translation());
@@ -188,6 +194,30 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& dri
 	}
 }
 
+// https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+Matrix Application::randomTranslation() {
+	Matrix m;
+	std::random_device dev;
+	std::mt19937 rng(dev());
+	std::uniform_real_distribution<float> distReal30(-30, 30);
+	std::uniform_int_distribution<std::mt19937::result_type> distPositive30(8, 30);
+
+	return Matrix().translation((float)distReal30(rng), (float)distPositive30(rng), (float)distReal30(rng));
+}
+
+void Application::drawBoundingBox(AABB box) {
+	float width = box.Max.X - box.Min.X;
+	float height = box.Max.Y - box.Min.Y;
+	float depth = box.Max.Z - box.Min.Z;
+
+	this->pModel = new LineBoxModel(width, height, depth);
+	ConstantShader* pConstantShader = new ConstantShader();
+	pConstantShader->color(Color(0, 1, 0));
+	this->pModel->shader(pConstantShader, true);
+	this->pModel->transform(Matrix().translation(0, height / 2, 0));
+	this->Models.push_back(pModel);
+}
+
 bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
 	AABB bbox_sleigh = sleigh->boundingBox();
 	AABB bbox_b = model_b->boundingBox();
@@ -196,7 +226,6 @@ bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
 
 	Vector minB = bbox_b.Min;
 	Vector maxB = bbox_b.Max;
-
 	Vector minS = bbox_sleigh.Min;
 	Vector maxS = bbox_sleigh.Max;
 

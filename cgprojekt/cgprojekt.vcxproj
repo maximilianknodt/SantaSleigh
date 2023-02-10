@@ -140,6 +140,8 @@
     <ClInclude Include="src\BaseModel.h" />
     <ClInclude Include="src\BaseShader.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\City.h" />
+    <ClInclude Include="src\Collision.h" />
     <ClInclude Include="src\color.h" />
     <ClInclude Include="src\ConstantShader.h" />
     <ClInclude Include="src\Deer.h" />
@@ -170,6 +172,8 @@
     <ClCompile Include="src\BaseModel.cpp" />
     <ClCompile Include="src\BaseShader.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\City.cpp" />
+    <ClCompile Include="src\Collision.cpp" />
     <ClCompile Include="src\color.cpp" />
     <ClCompile Include="src\ConstantShader.cpp" />
     <ClCompile Include="src\Deer.cpp" />
