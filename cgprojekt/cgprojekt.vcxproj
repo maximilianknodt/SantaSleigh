@@ -76,13 +76,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\thirdparty\glfw\include;$(ProjectDir)..\thirdparty\glew\include;$(ProjectDir)..\thirdparty\freeimage\include;$(ProjectDir)..\thirdparty\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\thirdparty\freetype\include;$(ProjectDir)..\thirdparty\glfw\include;$(ProjectDir)..\thirdparty\glew\include;$(ProjectDir)..\thirdparty\freeimage\include;$(ProjectDir)..\thirdparty\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\thirdparty\glfw\lib;$(ProjectDir)..\thirdparty\glew\lib;$(ProjectDir)..\thirdparty\freeimage\lib;$(ProjectDir)..\thirdparty\assimp\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\thirdparty\freetype\release_dll\win64;$(ProjectDir)..\thirdparty\glfw\lib;$(ProjectDir)..\thirdparty\glew\lib;$(ProjectDir)..\thirdparty\freeimage\lib;$(ProjectDir)..\thirdparty\assimp\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;FreeImage.lib;assimp-vc140-mt.lib;glfw3.lib;glew32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,6 +143,7 @@
     <ClInclude Include="src\color.h" />
     <ClInclude Include="src\ConstantShader.h" />
     <ClInclude Include="src\Deer.h" />
+    <ClInclude Include="src\Font.h" />
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Lights.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="src\color.cpp" />
     <ClCompile Include="src\ConstantShader.cpp" />
     <ClCompile Include="src\Deer.cpp" />
+    <ClCompile Include="src\Font.cpp" />
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\Lights.cpp" />
