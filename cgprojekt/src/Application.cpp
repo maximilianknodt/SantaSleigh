@@ -24,6 +24,7 @@
 #include "triangleboxmodel.h"
 #include "model.h"
 #include "ShaderLightmapper.h"
+#include "Font.h"
 
 
 #ifdef WIN32
@@ -38,7 +39,9 @@ Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NU
 	createNormalTestScene();
 	//createShadowTestScene();
 
-	
+	Font font = Font(1200, 800);
+	font.load(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 48);
+	font.renderText(Cam, "TestText zum Anschauen, ob er auch lang genug ist", 250.0f, 250.0f, 1.0f, Color());
 }
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing

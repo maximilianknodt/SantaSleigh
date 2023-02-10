@@ -42,8 +42,7 @@ int main()
 
     GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", NULL, NULL);
 
-    if (!window)
-    {
+    if (!window){
         fprintf(stderr, "ERROR: can not open window with GLFW3\n");
         glfwTerminate();
         return 1;

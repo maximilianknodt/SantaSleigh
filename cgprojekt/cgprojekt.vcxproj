@@ -158,6 +158,7 @@
     <ClInclude Include="src\ShadowMapGenerator.h" />
     <ClInclude Include="src\SantaSleigh.h" />
     <ClInclude Include="src\Sleigh.h" />
+    <ClInclude Include="src\TextShader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\TriangleBoxModel.h" />
     <ClInclude Include="src\TrianglePlaneModel.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="src\ShadowMapGenerator.cpp" />
     <ClCompile Include="src\SantaSleigh.cpp" />
     <ClCompile Include="src\Sleigh.cpp" />
+    <ClCompile Include="src\TextShader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\TriangleBoxModel.cpp" />
     <ClCompile Include="src\TrianglePlaneModel.cpp" />

@@ -102,6 +102,9 @@
     <ClInclude Include="src\Font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\TextShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -189,6 +192,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
