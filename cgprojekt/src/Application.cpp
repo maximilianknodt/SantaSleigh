@@ -41,7 +41,7 @@ Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NU
 
 	Font font = Font(1200, 800);
 	font.load(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 48);
-	font.renderText(Cam, "TestText zum Anschauen, ob er auch lang genug ist", 250.0f, 250.0f, 1.0f, Color());
+	font.renderText(Cam, "Testtext zum Anschauen, ob er auch lang genug ist", 250.0f, 250.0f, 1.0f, Color());
 }
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
