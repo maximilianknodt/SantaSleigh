@@ -22,7 +22,7 @@ BaseModel::~BaseModel()
 }
 
 void BaseModel::shader( BaseShader* shader, bool deleteOnDestruction )
-{
+{   
     pShader = shader;
     DeleteShader = deleteOnDestruction;
 }
@@ -33,7 +33,7 @@ void BaseModel::draw(const BaseCamera& Cam)
         std::cout << "BaseModel::draw() no shader found" << std::endl;
         return;
     }
-    
+    std::cout << "Here i am" << std::endl;
     pShader->modelTransform(transform());
     pShader->activate(Cam);
     

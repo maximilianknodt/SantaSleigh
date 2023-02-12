@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SantaSleigh_hpp
 #define SantaSleigh_hpp
 

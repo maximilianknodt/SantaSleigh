@@ -51,7 +51,7 @@ protected:
     Deer* pDeer;
     SantaSleigh* pSantaSleigh;
     LineBoxModel* pSleighBox;
-    StarList Stars;
+    StarList pStars;
     City* pCity;
 };
 

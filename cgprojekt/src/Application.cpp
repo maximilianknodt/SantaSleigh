@@ -52,14 +52,14 @@ void Application::createScene() {
 	pModel->transform(pModel->transform() * Matrix().scale(5));
 	Models.push_back(pModel);
 
-	for (int i = 0; i < MAX_STARS; i++) {
+	/* for (int i = 0; i < MAX_STARS; i++) {
 		pModel = new Model(ASSET_DIRECTORY "Gold_Star.obj", false);
 		pModel->shader(new PhongShader(), true);
 		pModel->transform(pModel->transform() * this->randomTranslation());
 		pModel->transform(pModel->transform() * Matrix().scale(0.1));
 		Stars.push_back(pModel);
 		Models.push_back(pModel);
-	}
+	} */
 
 	this->pCity = new City();
 	this->pCity->loadModels(ASSET_DIRECTORY "3d-model.obj", 4, 4, 10);
@@ -120,16 +120,6 @@ void Application::update(float dtime) {
 	Matrix mCam, mDistance;
 	mDistance.translation(Vector(0, 4, -15));
 	mCam = this->pSantaSleigh->transform() * mDistance;
-
-	BaseModel* collided;
-	for (BaseModel* model : Stars) {
-		if(this->checkCollision(this->pSantaSleigh->sleigh, model)) {
-			std::cout << "Collision with star" << std::endl;
-			collided = model;
-		}
-	}
-	Stars.remove(collided);
-	Models.remove(collided);
 
 	/* if (this->checkCollision(this->pSantaSleigh->sleigh, this->pCity)) {
 		this->pSantaSleigh->reset();
