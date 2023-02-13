@@ -8,7 +8,7 @@
 #include "vector.h"
 #include "BaseShader.h"
 
-class Font {
+class Text : BaseShader {
 public:
 	struct Character{
 		unsigned int textureID;
@@ -19,15 +19,15 @@ public:
 		unsigned int advance;	// gesamte Breite + Padding
 	};
 
-	Font(unsigned int width, unsigned int height);
+	Text(BaseCamera& cam, unsigned int width, unsigned int height);
 	void renderText(BaseCamera& cam, std::string text, float x, float y, float scale, Color color);
-	void load(std::string font, unsigned int fontSize);
+	void loadFont(std::string font, unsigned int fontSize);
 
 protected:
-	BaseShader shader;
 	std::map<char, Character> charactersMap;
 	unsigned int VAO;
 	unsigned int VBO;
+	GLint ProjectionLoc;
 };
 
 #endif

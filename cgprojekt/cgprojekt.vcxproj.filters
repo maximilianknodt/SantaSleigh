@@ -99,7 +99,7 @@
     <ClInclude Include="src\Sleigh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Font.h">
+    <ClInclude Include="src\Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\TextShader.h">
@@ -191,7 +191,7 @@
     <ClCompile Include="src\Sleigh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Font.cpp">
+    <ClCompile Include="src\Text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TextShader.cpp">

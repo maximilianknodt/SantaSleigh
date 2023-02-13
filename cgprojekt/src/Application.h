@@ -21,6 +21,7 @@
 #include "SantaSleigh.h"
 #include "Sleigh.h"
 #include "Deer.h"
+#include "Text.h"
 
 class Application {
 public:
@@ -43,6 +44,7 @@ protected:
     Sleigh* pSleigh;
     Deer* pDeer;
     SantaSleigh* pSantaSleigh;
+    Text text;
 };
 
 #endif /* Application_hpp */

@@ -1,4 +1,4 @@
-#include "Font.h"
+#include "Text.h"
 #include <iostream>
 #include <GL/glew.h>
 
@@ -8,17 +8,28 @@
 #define ASSET_DIRECTORY "../assets/"
 #endif
 
-Font::Font(unsigned int width, unsigned int height) {
-
-	this->shader = BaseShader();
-	if (this->shader.load(ASSET_DIRECTORY "vsText.glsl", ASSET_DIRECTORY "fsText.glsl") == false) {
+Text::Text(BaseCamera& cam, unsigned int width, unsigned int height) {
+	bool loaded = this->load(ASSET_DIRECTORY "vsText.glsl", ASSET_DIRECTORY "fsText.glsl");
+	if (!loaded) {
 		std::cout << "ERROR: Text Shader konnten nicht geladen werden" << std::endl;
 	}
+	BaseShader::activate(cam);
+	Matrix m;
+	m.orthographic(width, height, 0.0, 1.0);
 
-	this->shader.modelTransform(Matrix().orthographic(width, height, 0.0, 1.0));
-	this->shader.setParameter(this->shader.getParameterID("projection"), this->shader.modelTransform());
+	this->modelTransform(m);
 
+	this->ProjectionLoc = glGetUniformLocation(ShaderProgram, "Projection");
+	
+	setParameter(this->ProjectionLoc, m);
+	GLenum ErrorOne = glGetError();
 
+	setParameter(this->ProjectionLoc, 0);
+	GLenum ErrorTwo = glGetError();
+	std::cout << ErrorTwo << std::endl;
+
+	//this->setParameter(this->getParameterID("projection"), this->modelTransform());
+	
 	// VAO und VBO fuer die Text Quads einstellen
 	// Generieren und Binden
 	glGenVertexArrays(1, &this->VAO);
@@ -31,14 +42,13 @@ Font::Font(unsigned int width, unsigned int height) {
 	// Spezifizierung des Draw-Verhaltens des VBOs 
 	// -> Typ = Float, nicht normalisieren, Byte-Abstand zwischen Vertex-Attributen
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	// VAO und VBO reseten
+	// VAO und VBO zuruecksetzen
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-	this->charactersMap = {};
+	
 }
 
-void Font::load(std::string font, unsigned int fontSize) {
+void Text::loadFont(std::string font, unsigned int fontSize) {
 	this->charactersMap.clear();
 
 	FT_Library ft;
@@ -106,10 +116,9 @@ void Font::load(std::string font, unsigned int fontSize) {
 	FT_Done_FreeType(ft);
 }
 
-void Font::renderText(BaseCamera& cam, std::string text, float x, float y, float scale, Color color) {
-	// TODO: Shader rendern
-	this->shader.activate(cam);
-	this->shader.setParameter(this->shader.getParameterID("textColor"), color);
+void Text::renderText(BaseCamera& cam, std::string text, float x, float y, float scale, Color color) {
+	this->activate(cam);
+	this->setParameter(this->getParameterID("textColor"), color);
 	//glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.X, color.Y, color.Z);
 
 	glActiveTexture(GL_TEXTURE0);

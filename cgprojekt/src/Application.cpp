@@ -24,7 +24,7 @@
 #include "triangleboxmodel.h"
 #include "model.h"
 #include "ShaderLightmapper.h"
-#include "Font.h"
+#include "Text.h"
 
 
 #ifdef WIN32
@@ -34,15 +34,11 @@
 #endif
 
 
-Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
-	//createScene();
-	createNormalTestScene();
-	//createShadowTestScene();
-
-	Font font = Font(1200, 800);
-	font.load(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 48);
-	font.renderText(Cam, "Testtext zum Anschauen, ob er auch lang genug ist", 250.0f, 250.0f, 1.0f, Color());
+Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048), text(Cam, 1200, 800) {
+	createScene();
+	//this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 48);
 }
+
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
     glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
@@ -53,6 +49,10 @@ void Application::start() {
 }
 
 void Application::update(float dtime) {
+	
+	//this->text.renderText(Cam, "Testtext zum Anschauen, ob er auch lang genug ist", 0.0f, 0.0f, 1.0f, Color());
+
+
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
 	float shift = 0;		// zRot
@@ -120,123 +120,8 @@ void Application::keyboardActivity(float& xRot, float& yRot, float& zRot) {
 }
 
 void Application::createScene() {
-	Matrix m,n;
-
-	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
-	pModel->shader(new PhongShader(), true);
-	pModel->shadowCaster(false);
-	Models.push_back(pModel);
-
-
-	pModel = new Model(ASSET_DIRECTORY "scene.dae", false);
-	pModel->shader(new PhongShader(), true);
-	m.translation(10, 0, -10);
-	pModel->transform(m);
-	Models.push_back(pModel);
 	
-
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-	
-	Color c = Color(1.0f, 0.7f, 1.0f);
-	Vector a = Vector(1, 0, 0.1f);
-	float innerradius = 45;
-	float outerradius = 60;
-	
-	// point lights
-	PointLight* pl = new PointLight();
-	pl->position(Vector(-1.5, 3, 10));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(5.0f, 3, 10));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(-1.5, 3, 28));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(5.0f, 3, 28));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(-1.5, 3, -8));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	pl = new PointLight();
-	pl->position(Vector(5.0f, 3, -8));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-	
-	
-	// spot lights
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, 10));
-	sl->color(c);
-	sl->direction(Vector(1,-4,0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-
-	sl = new SpotLight();
-	sl->position(Vector(5.0f, 3, 10));
-	sl->color(c);
-	sl->direction(Vector(-1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-
-	sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, 28));
-	sl->color(c);
-	sl->direction(Vector(1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-
-	sl = new SpotLight();
-	sl->position(Vector(5.0f, 3, 28));
-	sl->color(c);
-	sl->direction(Vector(-1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-	
-	sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, -8));
-	sl->color(c);
-	sl->direction(Vector(1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-	
-	sl = new SpotLight();
-	sl->position(Vector(5.0f, 3, -8));
-	sl->color(c);
-	sl->direction(Vector(-1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-	
-}
-
-void Application::createNormalTestScene() {
+	std::cout << "Vor Skybox" << std::endl;
 	Matrix m, n;
 
 	// Umgebung als Cube: Skybox
@@ -245,12 +130,7 @@ void Application::createNormalTestScene() {
 	pModel->shadowCaster(false);
 	Models.push_back(pModel);
 
-	// create LineGrid model with constant color shader
-	pModel = new LinePlaneModel(10, 10, 10, 10);
-	ConstantShader* pConstShader = new ConstantShader();
-	pConstShader->color(Color(1, 1, 1));
-	pModel->shader(pConstShader, true);
-	Models.push_back(pModel);
+	std::cout << "Vor SantaSleigh" << std::endl;
 
 	this->pSantaSleigh = new SantaSleigh();
 	this->pSantaSleigh->shader(new PhongShader(), true);
@@ -277,30 +157,4 @@ void Application::createNormalTestScene() {
 	dl->color(Color(0.25, 0.25, 0.5));
 	dl->castShadows(true);
 	ShaderLightMapper::instance().addLight(dl);
-}
-
-void Application::createShadowTestScene() {
-	pModel = new Model(ASSET_DIRECTORY "shadowcube.obj", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-
-	pModel = new Model(ASSET_DIRECTORY "bunny.dae", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-	
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0, -1, -1));
-	dl->color(Color(0.5, 0.5, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-	
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(2, 2, 0));
-	sl->color(Color(0.5, 0.5, 0.5));
-	sl->direction(Vector(-1, -1, 0));
-	sl->innerRadius(10);
-	sl->outerRadius(13);
-	sl->castShadows(true);
-	ShaderLightMapper::instance().addLight(sl);
 }
