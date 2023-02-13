@@ -4,7 +4,6 @@
 
 #include "Model.h"
 #include <list>
-#include "Star.h"
 
 class Building : public BaseModel {
 public:
@@ -25,7 +24,7 @@ public:
 	virtual void draw(const BaseCamera& Cam);
 
 	Model* building;
-	Star* star;
+	Model* star;
 	BuildingProperties properties;
 };
 

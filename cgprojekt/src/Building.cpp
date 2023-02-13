@@ -1,9 +1,7 @@
 #include "Building.h"
 #include "PhongShader.h"
-#include "StarShader.h"
 #include <iostream>
 #include <random>
-#include "Star.h"
 
 #ifdef WIN32
 #define ASSET_DIRECTORY "../assets/"
@@ -13,7 +11,6 @@
 
 Building::Building() {
 	this->building = new Model();
-	this->star = new Star();
 }
 
 Building::~Building() {
@@ -26,22 +23,25 @@ bool Building::loadModels(BuildingProperties properties)
 	this->properties = properties;
 	this->building->shader(new PhongShader, true);
 	this->building->load(properties.fBuilding, true);
-	this->building->transform(this->building->transform() * properties.position);
+	this->building->transform(properties.position);
 	this->building->transformBoundingBox(properties.position);
 
 	if (properties.target) {
 		float height = this->building->boundingBox().size().Y;
-		this->star->loadModel(properties.fStar);
-		this->star->star->transform(Matrix().translation(0, height + 2, 0));
-		this->star->star->transform(this->star->transform() * Matrix().scale(0.5));
-		this->star->setMovement(1.0f, 2.0f);
+		std::cout << "Height: " << height << std::endl;
+		this->star = new Model();
+		this->star->shader(new PhongShader, true);
+		this->star->load(properties.fStar);
+		this->star->transform(properties.position);
+		this->star->transform(this->star->transform() * Matrix().translation(0, height + 2, 0));
+		this->star->transform(this->star->transform()* Matrix().scale(0.18));
 	}
 	return true;
 }
 
 
 void Building::update(float dtime) {
-	if (properties.target) this->star->update(dtime);
+	
 }
 
 void Building::draw(const BaseCamera& cam) {

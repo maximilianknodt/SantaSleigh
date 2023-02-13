@@ -35,8 +35,6 @@ public:
     void end();
 protected:
 	void createScene();
-	void createNormalTestScene();
-	void createShadowTestScene();
     void keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive);
     bool checkCollision(BaseModel* model_a, BaseModel* model_b);
     void drawBoundingBox(AABB box);

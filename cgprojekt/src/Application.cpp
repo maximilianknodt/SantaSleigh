@@ -39,9 +39,6 @@
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
 	createScene();
-
-	//createNormalTestScene();
-	//createShadowTestScene();
 }
 
 void Application::createScene() {
@@ -121,9 +118,6 @@ void Application::update(float dtime) {
 	mDistance.translation(Vector(0, 4, -15));
 	mCam = this->pSantaSleigh->transform() * mDistance;
 
-	/* if (this->checkCollision(this->pSantaSleigh->sleigh, this->pCity)) {
-		this->pSantaSleigh->reset();
-	} */
 	for (BaseModel* model : this->pCity->getModels()) {
 		if (this->checkCollision(this->pSantaSleigh->sleigh, model)) {
 			this->pSantaSleigh->reset();
@@ -162,13 +156,6 @@ void Application::end() {
     Models.clear();
 }
 
-/// <summary>
-/// Sets the values for the rotation around the three axes
-/// and returns them in [xRot], [yRot] and [zRot]
-/// </summary>
-/// <param name="xRot"></param>
-/// <param name="yRot"></param>
-/// <param name="zRot"></param>
 void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive) {
 	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.2; }
 	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.2; }
@@ -228,75 +215,4 @@ bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
 		collision = true;
 	}
 	return collision;
-}
-
-void Application::createNormalTestScene() {
-	Matrix m, n;
-
-	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
-	pModel->shader(new PhongShader(), true);
-	pModel->shadowCaster(false);
-	Models.push_back(pModel);
-
-
-	pModel = new Model(ASSET_DIRECTORY "scene.dae", false);
-	pModel->shader(new PhongShader(), true);
-	m.translation(10, 0, -10);
-	pModel->transform(m);
-	Models.push_back(pModel);
-
-
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-
-	Color c = Color(1.0f, 0.7f, 1.0f);
-	Vector a = Vector(1, 0, 0.1f);
-	float innerradius = 45;
-	float outerradius = 60;
-
-	// point lights
-	PointLight* pl = new PointLight();
-	pl->position(Vector(-1.5, 3, 10));
-	pl->color(c);
-	pl->attenuation(a);
-	ShaderLightMapper::instance().addLight(pl);
-
-	// spot lights
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(-1.5, 3, 10));
-	sl->color(c);
-	sl->direction(Vector(1, -4, 0));
-	sl->innerRadius(innerradius);
-	sl->outerRadius(outerradius);
-	ShaderLightMapper::instance().addLight(sl);
-}
-
-void Application::createShadowTestScene() {
-	pModel = new Model(ASSET_DIRECTORY "shadowcube.obj", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-
-	pModel = new Model(ASSET_DIRECTORY "bunny.dae", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-	
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0, -1, -1));
-	dl->color(Color(0.5, 0.5, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-	
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(2, 2, 0));
-	sl->color(Color(0.5, 0.5, 0.5));
-	sl->direction(Vector(-1, -1, 0));
-	sl->innerRadius(10);
-	sl->outerRadius(13);
-	sl->castShadows(true);
-	ShaderLightMapper::instance().addLight(sl);
 }
