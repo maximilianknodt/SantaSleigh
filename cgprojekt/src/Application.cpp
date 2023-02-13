@@ -36,6 +36,7 @@
 
 #define MAX_STARS 10
 #define MAX_BUILDINGS 10
+#define MAX_TRAVEL_DIST 4
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
 	createScene();
@@ -71,6 +72,7 @@ void Application::createScene() {
 		this->pSantaSleigh->transform()
 		* Matrix().translation(this->pSantaSleigh->getStartPos()));
 	Models.push_back(pSantaSleigh);
+	this->pGiftTravel = MAX_TRAVEL_DIST;
 
 	/* AABB sleighBox = this->pSantaSleigh->sleigh->boundingBox();
 	float height = pSantaSleigh->sleigh->boundingBox().Max.Y - pSantaSleigh->sleigh->boundingBox().Min.Y;
@@ -118,10 +120,65 @@ void Application::update(float dtime) {
 	mDistance.translation(Vector(0, 4, -15));
 	mCam = this->pSantaSleigh->transform() * mDistance;
 
-	for (BaseModel* model : this->pCity->getModels()) {
-		if (this->checkCollision(this->pSantaSleigh->sleigh, model)) {
+	for (Building* model : this->pCity->getModels()) {
+		if (this->checkCollision(this->pSantaSleigh->sleigh, model->building)) {
 			this->pSantaSleigh->reset();
 		}
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_R)) {
+		/* double xPos, yPos;
+		glfwGetCursorPos(this->pWindow, &xPos, &yPos);
+		int wWidth, wHeight;
+		glfwGetWindowSize(this->pWindow, &wWidth, &wHeight);
+
+		// Normalisierung der Mauskoordinaten
+		float xMouse = xPos / wWidth * 2 - 1;
+		float yMouse = -(yPos / wHeight * 2 - 1);
+		Vector r;
+		Vector d = calc3DRay(xMouse, yMouse, r);
+		float s = -r.Y / d.Y;
+		Vector c = r + (d * s); */
+		if (!isGifting) {
+			pGift = new Model();
+			pGift->shader(new PhongShader(), false);
+			pGift->load(ASSET_DIRECTORY "Gold_Star.obj");
+			Matrix m;
+			m.scale(0.15);
+			pGift->transform(pSantaSleigh->sleigh->transform() * m);
+			pGift->transformBoundingBox(pSantaSleigh->sleigh->transform());
+			Models.push_back(pGift);
+			this->isGifting = true;
+		}
+		//std::cout << "Click: " << "X: " << xPos << " Y: " << yPos << std::endl; 
+	}
+
+	if (this->isGifting) {
+		this->pGiftTravel -= 1 * dtime;
+		if (this->pGiftTravel <= 1) {
+			Models.remove(this->pGift);
+			this->pGiftTravel = MAX_TRAVEL_DIST;
+			this->isGifting = false;
+			return;
+		}
+
+		for (Building* building : this->pCity->getTargets()) {
+			if (checkGiftCollision(this->pGift, building->building)) {
+				std::cout << "DELIVERED!" << std::endl;
+				this->Models.remove(this->pGift);
+				building->removeTarget();
+			}
+		}
+
+		Matrix m;
+		//m.rotationZ(45 * dtime);
+		m.translation(0, 0, 200 * dtime);
+		this->pGift->transform(this->pGift->transform() * m);
+		this->pGift->transformBoundingBox(this->pGift->transform());
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_T)) {
+		this->isGifting = false;
 	}
 
 	Cam.setPosition(mCam.translation());
@@ -215,4 +272,41 @@ bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
 		collision = true;
 	}
 	return collision;
+}
+
+bool Application::checkGiftCollision(BaseModel* sleigh, BaseModel* model_b) {
+	AABB bbox_sleigh = sleigh->boundingBox();
+	AABB bbox_b = model_b->boundingBox();
+	bool collision = false;
+
+	Vector minB = bbox_b.Min;
+	Vector maxB = bbox_b.Max;
+	Vector minS = bbox_sleigh.Min;
+	Vector maxS = bbox_sleigh.Max;
+
+	// std::cout << "MinH: X = " << minB.X << "\tY = " << minB.Y << "\tZ = " << minB.Z << "/\tMaxH: X = " << maxB.X << "\tY = " << maxB.Y << "\tZ = " << maxB.Z << std::endl;
+	// std::cout << "MaxS: X = " << maxS.X << "\tY = " << maxS.Y << "\tZ = " << maxS.Z << "/\tMinS: X = " << minS.X << "\tY = " << minS.Y << "\tZ = " << minS.Z << std::endl;
+
+	if ((bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
+		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
+		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
+		collision = true;
+	}
+	return collision;
+}
+
+
+
+Vector Application::calc3DRay(float x, float y, Vector& Pos)
+{
+	Matrix projection = Cam.getProjectionMatrix();
+	projection.invert();
+	Matrix view = Cam.getViewMatrix();
+	view.invert();
+	Pos = view.translation();
+
+	// Inverse Projektionsmatrix auf Mauszeigerkoordinate angewandt
+	Vector mouse(x, y, 0);
+	Vector direction = projection.transformVec4x4(mouse);
+	return view.transformVec3x3(direction);
 }

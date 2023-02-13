@@ -38,6 +38,7 @@ bool City::loadModels(const char* building, int width, int length, int streetWid
 			};
 			building->loadModels(properties);
 			models.push_back(building);
+			if (properties.target) targets.push_back(building);
 		}
 	}
 	return true;

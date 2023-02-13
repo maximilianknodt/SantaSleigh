@@ -21,8 +21,8 @@ Building::~Building() {
 bool Building::loadModels(BuildingProperties properties)
 {
 	this->properties = properties;
-	this->building->shader(new PhongShader, true);
-	this->building->load(properties.fBuilding, true);
+	this->building->shader(new PhongShader, false);
+	this->building->load(properties.fBuilding, false);
 	this->building->transform(properties.position);
 	this->building->transformBoundingBox(properties.position);
 
@@ -39,6 +39,9 @@ bool Building::loadModels(BuildingProperties properties)
 	return true;
 }
 
+void Building::removeTarget() {
+	properties.target = false;
+}
 
 void Building::update(float dtime) {
 	

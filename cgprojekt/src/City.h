@@ -11,16 +11,16 @@ public:
 	City();
 	virtual ~City();
 	typedef std::list<Building*> ModelList;
-	typedef std::list<Model*> TargetList;
+	typedef std::list<Building*> TargetList;
 	bool loadModels(const char* building, int width, int length, int streetWidth);
 	void update(float dtime);
 	virtual void draw(const BaseCamera& Cam);
 	ModelList getModels() { return this->models; };
-	TargetList* getTargets() { return this->targets; };
+	TargetList getTargets() { return this->targets; };
 	void reset();
 protected:
 	ModelList models;
-	TargetList* targets;
+	TargetList targets;
 	bool randomBool();
 };
 

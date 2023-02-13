@@ -22,6 +22,7 @@ public:
 	bool loadModels(BuildingProperties properties);
 	void update(float dtime);
 	virtual void draw(const BaseCamera& Cam);
+	void removeTarget();
 
 	Model* building;
 	Model* star;

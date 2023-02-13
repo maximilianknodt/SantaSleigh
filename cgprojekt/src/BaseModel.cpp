@@ -33,7 +33,7 @@ void BaseModel::draw(const BaseCamera& Cam)
         std::cout << "BaseModel::draw() no shader found" << std::endl;
         return;
     }
-    std::cout << "Here i am" << std::endl;
+
     pShader->modelTransform(transform());
     pShader->activate(Cam);
     
