@@ -50,15 +50,6 @@ void Application::createScene() {
 	pModel->transform(pModel->transform() * Matrix().scale(5));
 	Models.push_back(pModel);
 
-	/* for (int i = 0; i < MAX_STARS; i++) {
-		pModel = new Model(ASSET_DIRECTORY "Gold_Star.obj", false);
-		pModel->shader(new PhongShader(), true);
-		pModel->transform(pModel->transform() * this->randomTranslation());
-		pModel->transform(pModel->transform() * Matrix().scale(0.1));
-		Stars.push_back(pModel);
-		Models.push_back(pModel);
-	} */
-
 	this->pCity = new City();
 	this->pCity->loadModels(ASSET_DIRECTORY "3d-model.obj", 4, 4, 10);
 	Models.push_back(pCity);
@@ -167,6 +158,9 @@ void Application::update(float dtime) {
 				std::cout << "DELIVERED!" << std::endl;
 				this->Models.remove(this->pGift);
 				building->removeTarget();
+				this->pGiftTravel = MAX_TRAVEL_DIST;
+				this->isGifting = false;
+				return;
 			}
 		}
 
