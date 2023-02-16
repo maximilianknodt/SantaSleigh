@@ -24,6 +24,7 @@ public:
 	virtual void draw(const BaseCamera& Cam);
 	void removeTarget();
 
+	float totalTime;
 	Model* building;
 	Model* star;
 	BuildingProperties properties;

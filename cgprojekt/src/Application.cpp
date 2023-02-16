@@ -26,6 +26,7 @@
 #include "ShaderLightmapper.h"
 #include <iostream>
 #include <random>
+#include <vector>
 
 
 #ifdef WIN32
@@ -50,8 +51,14 @@ void Application::createScene() {
 	pModel->transform(pModel->transform() * Matrix().scale(5));
 	Models.push_back(pModel);
 
+	// Erstellen der Map
 	this->pCity = new City();
-	this->pCity->loadModels(ASSET_DIRECTORY "3d-model.obj", 4, 4, 10);
+	std::vector<const char*> buildings;
+	buildings.push_back(ASSET_DIRECTORY "buildings/Brick_Building/Brick_Building.obj");
+	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
+	buildings.push_back(ASSET_DIRECTORY "buildings/watch_tower/watch_tower.obj");
+	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
+	this->pCity->loadModels(buildings, 4, 4, 4);
 	Models.push_back(pCity);
 
 	this->pSantaSleigh = new SantaSleigh();
@@ -64,17 +71,6 @@ void Application::createScene() {
 		* Matrix().translation(this->pSantaSleigh->getStartPos()));
 	Models.push_back(pSantaSleigh);
 	this->pGiftTravel = MAX_TRAVEL_DIST;
-
-	/* AABB sleighBox = this->pSantaSleigh->sleigh->boundingBox();
-	float height = pSantaSleigh->sleigh->boundingBox().Max.Y - pSantaSleigh->sleigh->boundingBox().Min.Y;
-	this->drawBoundingBox(this->pSantaSleigh->sleigh->boundingBox().transform(this->pSantaSleigh->transform() * Matrix().translation(0, height / 2, 0))); */
-	 
-	// Globale Lichtquelle
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
 }
 
 void Application::start() {
@@ -95,7 +91,7 @@ void Application::update(float dtime) {
 
 	this->pSantaSleigh->steer(upDown, leftRight, shift, drive);
 	this->pSantaSleigh->update(dtime);
-	// ggf. fuer weichere Camerabewegung nutzbar ------------------------------
+	// ggf. fuer weichere Cupdateamerabewegung nutzbar ------------------------------
 	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
 	float smoothness = 1;
 	Vector currentObjPos, lastObjPos, travelDist, camPos;
@@ -111,37 +107,25 @@ void Application::update(float dtime) {
 	mDistance.translation(Vector(0, 4, -15));
 	mCam = this->pSantaSleigh->transform() * mDistance;
 
+
+	// Kollisionen
 	for (Building* model : this->pCity->getModels()) {
+		model->update(dtime);
 		if (this->checkCollision(this->pSantaSleigh->sleigh, model->building)) {
 			this->pSantaSleigh->reset();
 		}
 	}
 
 	if (glfwGetKey(this->pWindow, GLFW_KEY_R)) {
-		/* double xPos, yPos;
-		glfwGetCursorPos(this->pWindow, &xPos, &yPos);
-		int wWidth, wHeight;
-		glfwGetWindowSize(this->pWindow, &wWidth, &wHeight);
-
-		// Normalisierung der Mauskoordinaten
-		float xMouse = xPos / wWidth * 2 - 1;
-		float yMouse = -(yPos / wHeight * 2 - 1);
-		Vector r;
-		Vector d = calc3DRay(xMouse, yMouse, r);
-		float s = -r.Y / d.Y;
-		Vector c = r + (d * s); */
 		if (!isGifting) {
 			pGift = new Model();
 			pGift->shader(new PhongShader(), false);
 			pGift->load(ASSET_DIRECTORY "Gold_Star.obj");
-			Matrix m;
-			m.scale(0.15);
-			pGift->transform(pSantaSleigh->sleigh->transform() * m);
-			pGift->transformBoundingBox(pSantaSleigh->sleigh->transform());
+			pGift->transform(pSantaSleigh->sleigh->transform() * Matrix().scale(0.08));
+			pGift->transformBoundingBox(pGift->transform());
 			Models.push_back(pGift);
 			this->isGifting = true;
 		}
-		//std::cout << "Click: " << "X: " << xPos << " Y: " << yPos << std::endl; 
 	}
 
 	if (this->isGifting) {
@@ -156,10 +140,11 @@ void Application::update(float dtime) {
 		for (Building* building : this->pCity->getTargets()) {
 			if (checkGiftCollision(this->pGift, building->building)) {
 				std::cout << "DELIVERED!" << std::endl;
+				this->isGifting = false;
 				this->Models.remove(this->pGift);
 				building->removeTarget();
+				this->pCity->removeTarget(building);
 				this->pGiftTravel = MAX_TRAVEL_DIST;
-				this->isGifting = false;
 				return;
 			}
 		}
