@@ -41,7 +41,7 @@ bool BaseShader::load( const char* VertexShaderFile, const char* FragmentShaderF
     
     delete [] VSFileData;
     delete [] FSFileData;
-  
+
     return true;
 }
 

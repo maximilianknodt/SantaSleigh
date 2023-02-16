@@ -12,5 +12,5 @@ newmtl Material__79
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka santasleigh_texture.bmp
-	map_Kd santasleigh_texture.bmp
+	map_Ka ./texture/santasleigh_texture.bmp
+	map_Kd ./texture/santasleigh_texture.bmp

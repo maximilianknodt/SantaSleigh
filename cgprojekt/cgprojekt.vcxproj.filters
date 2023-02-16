@@ -103,6 +103,15 @@
     <ClInclude Include="src\Sleigh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\City.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Collision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Building.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -191,6 +200,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Sleigh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\City.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Building.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

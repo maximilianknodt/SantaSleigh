@@ -76,14 +76,18 @@ PhongShader::PhongShader(bool LoadStaticShaderCode) :
  NormalTexture(Texture::defaultNormalTex()),
  UpdateState(0xFFFFFFFF)
 {
-    if(!LoadStaticShaderCode)
+    /* if (!LoadStaticShaderCode)
         return;
     //ShaderProgram = createShaderProgram(VertexShaderCode, FragmentShaderCode);
 	bool loaded = load(ASSET_DIRECTORY"vsphong.glsl", ASSET_DIRECTORY"fsphong.glsl");
 	if (!loaded)
 		throw std::exception();
-    assignLocations();
-	
+    assignLocations(); */
+
+    if (!LoadStaticShaderCode)
+        return;
+    ShaderProgram = createShaderProgram(VertexShaderCode, FragmentShaderCode);
+    assignLocations();	
 }
 void PhongShader::assignLocations()
 {

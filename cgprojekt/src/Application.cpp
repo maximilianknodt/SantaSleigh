@@ -25,6 +25,9 @@
 #include "model.h"
 #include "terrainshader.h"
 #include "ShaderLightmapper.h"
+#include <iostream>
+#include <random>
+#include <vector>
 
 
 #ifdef WIN32
@@ -33,14 +36,44 @@
 #define ASSET_DIRECTORY "../assets/"
 #endif
 
+#define MAX_STARS 10
+#define MAX_BUILDINGS 10
+#define MAX_TRAVEL_DIST 4
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
 	createScene();
-	//createNormalTestScene();
-	//createShadowTestScene();
-
-	
 }
+
+void Application::createScene() {
+	// Umgebung als Cube: Skybox
+	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
+	pModel->shader(new PhongShader(), true);
+	pModel->shadowCaster(false);
+	pModel->transform(pModel->transform() * Matrix().scale(5));
+	Models.push_back(pModel);
+
+	// Erstellen der Map
+	this->pCity = new City();
+	std::vector<const char*> buildings;
+	buildings.push_back(ASSET_DIRECTORY "buildings/Brick_Building/Brick_Building.obj");
+	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
+	buildings.push_back(ASSET_DIRECTORY "buildings/watch_tower/watch_tower.obj");
+	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
+	this->pCity->loadModels(buildings, 4, 4, 4);
+	Models.push_back(pCity);
+
+	this->pSantaSleigh = new SantaSleigh();
+	this->pSantaSleigh->shader(new PhongShader(), true);
+	this->pSantaSleigh->loadModels(
+		ASSET_DIRECTORY "deer.obj",
+		ASSET_DIRECTORY "santasleigh.obj");
+	this->pSantaSleigh->transform(
+		this->pSantaSleigh->transform()
+		* Matrix().translation(this->pSantaSleigh->getStartPos()));
+	Models.push_back(pSantaSleigh);
+	this->pGiftTravel = MAX_TRAVEL_DIST;
+}
+
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
     glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
@@ -54,18 +87,84 @@ void Application::update(float dtime) {
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
 	float shift = 0;		// zRot
+	bool drive = false;
+	this->keyboardInput(upDown, leftRight, shift, drive);
 
-	this->keyboardActivity(upDown, leftRight, shift);
-
-	//pDeer->steer(leftRight, upDown, shift);
-	//pSleigh->steer(leftRight, upDown, shift);
-	
-	//pDeer->update(dtime);
-	//pSleigh->update(dtime, this->pDeer->transform());
-
-	this->pSantaSleigh->steer(upDown, leftRight, shift);
+	this->pSantaSleigh->steer(upDown, leftRight, shift, drive);
 	this->pSantaSleigh->update(dtime);
-	
+	// ggf. fuer weichere Cupdateamerabewegung nutzbar ------------------------------
+	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
+	float smoothness = 1;
+	Vector currentObjPos, lastObjPos, travelDist, camPos;
+	currentObjPos = this->pSantaSleigh->getPosition();
+	lastObjPos = this->pSantaSleigh->getLastPosition();
+	travelDist = currentObjPos - lastObjPos;
+	camPos = Cam.position() + (travelDist * smoothness);
+	// Letzte Position des Objekts setzen
+	this->pSantaSleigh->setLastPosition(currentObjPos);
+	// ------------------------------------------------------------------------
+
+	Matrix mCam, mDistance;
+	mDistance.translation(Vector(0, 4, -15));
+	mCam = this->pSantaSleigh->transform() * mDistance;
+
+
+	// Kollisionen
+	for (Building* model : this->pCity->getModels()) {
+		model->update(dtime);
+		if (this->checkCollision(this->pSantaSleigh->sleigh, model->building)) {
+			this->pSantaSleigh->reset();
+		}
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_R)) {
+		if (!isGifting) {
+			pGift = new Model();
+			pGift->shader(new PhongShader(), false);
+			pGift->load(ASSET_DIRECTORY "Gold_Star.obj");
+			pGift->transform(pSantaSleigh->sleigh->transform() * Matrix().scale(0.08));
+			pGift->transformBoundingBox(pGift->transform());
+			Models.push_back(pGift);
+			this->isGifting = true;
+		}
+	}
+
+	if (this->isGifting) {
+		this->pGiftTravel -= 1 * dtime;
+		if (this->pGiftTravel <= 1) {
+			Models.remove(this->pGift);
+			this->pGiftTravel = MAX_TRAVEL_DIST;
+			this->isGifting = false;
+			return;
+		}
+
+		for (Building* building : this->pCity->getTargets()) {
+			if (checkGiftCollision(this->pGift, building->building)) {
+				std::cout << "DELIVERED!" << std::endl;
+				this->isGifting = false;
+				this->Models.remove(this->pGift);
+				building->removeTarget();
+				this->pCity->removeTarget(building);
+				this->pGiftTravel = MAX_TRAVEL_DIST;
+				return;
+			}
+		}
+
+		Matrix m;
+		//m.rotationZ(45 * dtime);
+		m.translation(0, 0, 200 * dtime);
+		this->pGift->transform(this->pGift->transform() * m);
+		this->pGift->transformBoundingBox(this->pGift->transform());
+	}
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_T)) {
+		this->isGifting = false;
+	}
+
+	Cam.setPosition(mCam.translation());
+	Cam.setTarget(currentObjPos);
+	Cam.setUp(mCam.up());
+
     Cam.update();
 }
 
@@ -86,152 +185,108 @@ void Application::draw() {
     GLenum Error = glGetError();
     assert(Error==0);
 }
+
 void Application::end() {
     for( ModelList::iterator it = Models.begin(); it != Models.end(); ++it )
         delete *it;
     
     Models.clear();
 }
-/// <summary>
-/// Sets the values for the rotation around the three axes
-/// and returns them in [xRot], [yRot] and [zRot]
-/// </summary>
-/// <param name="xRot"></param>
-/// <param name="yRot"></param>
-/// <param name="zRot"></param>
-void Application::keyboardActivity(float& xRot, float& yRot, float& zRot) {
-	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.0f; }
-	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.0f; }
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) {
-		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			zRot = -2;
-		}
-		else yRot = 1.0f;
-	}
-	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) {
-		if (glfwGetKey(this->pWindow, GLFW_KEY_LEFT_SHIFT)) {
-			zRot = 2;
-		}
-		else yRot = -1.0f;
+void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive) {
+	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.2; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.2; }
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_A)) { zRot = -1.5; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_D)) { zRot = 1.5; }
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_Q)) { yRot = 1.2; }
+	if (glfwGetKey(this->pWindow, GLFW_KEY_E)) { yRot = -1.2; }
+
+	if (glfwGetKey(this->pWindow, GLFW_KEY_SPACE)) {
+		drive = true;
 	}
 }
 
-void Application::createScene() {
-	pModel = new LinePlaneModel(20, 20, 20, 20);
-	ConstantShader* pConstShader = new ConstantShader();
-	pConstShader->color(Color(1, 1, 1));
-	pModel->shader(pConstShader, true);
-	Models.push_back(pModel);
-
-	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
-	pModel->shader(new PhongShader(), true);
-	pModel->shadowCaster(false);
-	Matrix s;
-	s.scale(5);
-	pModel->transform(s);
-	Models.push_back(pModel);
-
-	pTerrain = new Terrain();
-	TerrainShader* pTerrainShader = new TerrainShader(ASSET_DIRECTORY);
-	pTerrainShader->diffuseTexture(Texture::LoadShared(ASSET_DIRECTORY "grass.bmp"));
-	pTerrain->shader(pTerrainShader, true);
-	pTerrain->load(ASSET_DIRECTORY "heightmap.bmp", ASSET_DIRECTORY"grass.bmp", ASSET_DIRECTORY"rock.bmp");
-	pTerrain->width(10);
-	pTerrain->depth(10);
-	pTerrain->height(10);
-	Models.push_back(pTerrain);
-
-	this->pSantaSleigh = new SantaSleigh();
-	this->pSantaSleigh->shader(new PhongShader(), true);
-	this->pSantaSleigh->loadModels(
-		ASSET_DIRECTORY "deer.obj",
-		ASSET_DIRECTORY "santasleigh.obj");
-	Models.push_back(pSantaSleigh);
-
+// https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+Matrix Application::randomTranslation() {
 	Matrix m;
-	m.translation(40, 4, 40);
-	this->pSantaSleigh->transform(m);
+	std::random_device dev;
+	std::mt19937 rng(dev());
+	std::uniform_real_distribution<float> distReal30(-30, 30);
+	std::uniform_int_distribution<std::mt19937::result_type> distPositive30(8, 30);
 
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-	
-	Color c = Color(1.0f, 0.7f, 1.0f);
-	Vector a = Vector(1, 0, 0.1f);
-	float innerradius = 45;
-	float outerradius = 60;
-	
+	return Matrix().translation((float)distReal30(rng), (float)distPositive30(rng), (float)distReal30(rng));
 }
 
-void Application::createNormalTestScene() {
-	Matrix m, n;
+void Application::drawBoundingBox(AABB box) {
+	float width = box.Max.X - box.Min.X;
+	float height = box.Max.Y - box.Min.Y;
+	float depth = box.Max.Z - box.Min.Z;
 
-	// Umgebung als Cube: Skybox
-	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
-	pModel->shader(new PhongShader(), true);
-	pModel->shadowCaster(false);
-	Models.push_back(pModel);
-
-	// create LineGrid model with constant color shader
-	pModel = new LinePlaneModel(10, 10, 10, 10);
-	ConstantShader* pConstShader = new ConstantShader();
-	pConstShader->color(Color(1, 1, 1));
-	pModel->shader(pConstShader, true);
-	Models.push_back(pModel);
-
-	this->pSantaSleigh = new SantaSleigh();
-	this->pSantaSleigh->shader(new PhongShader(), true);
-	this->pSantaSleigh->loadModels(
-		ASSET_DIRECTORY "deer.obj",
-		ASSET_DIRECTORY "santasleigh.obj");
-	Models.push_back(pSantaSleigh);
-
-	/*
-	this->pSleigh = new Sleigh();
-	this->pSleigh->shader(new PhongShader(), true);
-	this->pSleigh->loadModel(ASSET_DIRECTORY "santasleigh.obj");
-	Models.push_back(pSleigh);	
-
-	this->pDeer = new Deer();
-	this->pDeer->shader(new PhongShader(), true);
-	this->pDeer->loadModel(ASSET_DIRECTORY "deer.obj");
-	Models.push_back(pDeer);
-	*/
-
-	// Globale Lichtquelle
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
+	this->pModel = new LineBoxModel(width, height, depth);
+	ConstantShader* pConstantShader = new ConstantShader();
+	pConstantShader->color(Color(0, 1, 0));
+	this->pModel->shader(pConstantShader, true);
+	this->pModel->transform(Matrix().translation(0, height / 2, 0));
+	this->Models.push_back(pModel);
 }
 
-void Application::createShadowTestScene() {
-	pModel = new Model(ASSET_DIRECTORY "shadowcube.obj", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
+bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
+	AABB bbox_sleigh = sleigh->boundingBox();
+	AABB bbox_b = model_b->boundingBox();
+	bbox_sleigh = bbox_sleigh.transform(sleigh->transform());
+	bool collision = false;
 
-	pModel = new Model(ASSET_DIRECTORY "bunny.dae", false);
-	pModel->shader(new PhongShader(), true);
-	Models.push_back(pModel);
-	
-	// directional lights
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0, -1, -1));
-	dl->color(Color(0.5, 0.5, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
-	
-	SpotLight* sl = new SpotLight();
-	sl->position(Vector(2, 2, 0));
-	sl->color(Color(0.5, 0.5, 0.5));
-	sl->direction(Vector(-1, -1, 0));
-	sl->innerRadius(10);
-	sl->outerRadius(13);
-	sl->castShadows(true);
-	ShaderLightMapper::instance().addLight(sl);
+	Vector minB = bbox_b.Min;
+	Vector maxB = bbox_b.Max;
+	Vector minS = bbox_sleigh.Min;
+	Vector maxS = bbox_sleigh.Max;
+
+	// std::cout << "MinH: X = " << minB.X << "\tY = " << minB.Y << "\tZ = " << minB.Z << "/\tMaxH: X = " << maxB.X << "\tY = " << maxB.Y << "\tZ = " << maxB.Z << std::endl;
+	// std::cout << "MaxS: X = " << maxS.X << "\tY = " << maxS.Y << "\tZ = " << maxS.Z << "/\tMinS: X = " << minS.X << "\tY = " << minS.Y << "\tZ = " << minS.Z << std::endl;
+
+	if ( (bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
+		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
+		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
+		collision = true;
+	}
+	return collision;
+}
+
+bool Application::checkGiftCollision(BaseModel* sleigh, BaseModel* model_b) {
+	AABB bbox_sleigh = sleigh->boundingBox();
+	AABB bbox_b = model_b->boundingBox();
+	bool collision = false;
+
+	Vector minB = bbox_b.Min;
+	Vector maxB = bbox_b.Max;
+	Vector minS = bbox_sleigh.Min;
+	Vector maxS = bbox_sleigh.Max;
+
+	// std::cout << "MinH: X = " << minB.X << "\tY = " << minB.Y << "\tZ = " << minB.Z << "/\tMaxH: X = " << maxB.X << "\tY = " << maxB.Y << "\tZ = " << maxB.Z << std::endl;
+	// std::cout << "MaxS: X = " << maxS.X << "\tY = " << maxS.Y << "\tZ = " << maxS.Z << "/\tMinS: X = " << minS.X << "\tY = " << minS.Y << "\tZ = " << minS.Z << std::endl;
+
+	if ((bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
+		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
+		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
+		collision = true;
+	}
+	return collision;
+}
+
+
+
+Vector Application::calc3DRay(float x, float y, Vector& Pos)
+{
+	Matrix projection = Cam.getProjectionMatrix();
+	projection.invert();
+	Matrix view = Cam.getViewMatrix();
+	view.invert();
+	Pos = view.translation();
+
+	// Inverse Projektionsmatrix auf Mauszeigerkoordinate angewandt
+	Vector mouse(x, y, 0);
+	Vector direction = projection.transformVec4x4(mouse);
+	return view.transformVec3x3(direction);
 }

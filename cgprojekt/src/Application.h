@@ -22,20 +22,29 @@
 #include "SantaSleigh.h"
 #include "Sleigh.h"
 #include "Deer.h"
+#include "LineBoxModel.h"
+#include "City.h"
 
 class Application {
 public:
     typedef std::list<BaseModel*> ModelList;
+    typedef std::list<BaseModel*> StarList;
     Application(GLFWwindow* pWin);
     void start();
     void update(float dtime);
     void draw();
     void end();
+    Vector calc3DRay(float x, float y, Vector& Pos);
 protected:
 	void createScene();
-	void createNormalTestScene();
-	void createShadowTestScene();
-    void keyboardActivity(float& xRot, float& yRot, float& zRot);
+    void keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive);
+    bool checkCollision(BaseModel* model_a, BaseModel* model_b);
+    bool checkGiftCollision(BaseModel* sleigh, BaseModel* model_b);
+    void drawBoundingBox(AABB box);
+    Matrix randomTranslation();
+
+    bool isGifting;
+    float pGiftTravel;
     Camera Cam;
     ModelList Models;
     GLFWwindow* pWindow;
@@ -45,6 +54,10 @@ protected:
     Sleigh* pSleigh;
     Deer* pDeer;
     SantaSleigh* pSantaSleigh;
+    LineBoxModel* pSleighBox;
+    StarList pStars;
+    City* pCity; 
+    Model* pGift;
 };
 
 #endif /* Application_hpp */

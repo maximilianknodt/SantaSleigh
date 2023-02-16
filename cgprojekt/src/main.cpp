@@ -61,26 +61,25 @@ int main()
         double lastTime = 0;
         Application App(window);
         App.start();
-        while (!glfwWindowShouldClose(window))
-        {
+        while (!glfwWindowShouldClose(window)) {
             // Nur fuer das Testen, um per ESC aus dem Fullscreen rauszukommen, nicht funktionsfaehig
             int width = 1200;
             int height = 800;
-            if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-            {
+            if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
                 glfwSetWindowMonitor(window, NULL, 0, 0, width, height, GLFW_DONT_CARE);
                 glfwGetFramebufferSize(window, &width, &height);
                 glViewport(0, 0, width, height);
             }
-            if (glfwGetKey(window, GLFW_KEY_F))
-            {
+            if (glfwGetKey(window, GLFW_KEY_F)) {
                 glfwSetWindowMonitor(window, monitor, 0, 0, WindowWidth, WindowHeight, GLFW_DONT_CARE);
                 glfwGetFramebufferSize(window, &width, &height);
                 glViewport(0, 0, width, height);
             }
+
             double now = glfwGetTime();
             double delta = now - lastTime;
             lastTime = now;
+
             // once per frame
             glfwPollEvents();
             App.update((float)delta);
