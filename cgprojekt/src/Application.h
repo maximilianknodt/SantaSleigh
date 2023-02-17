@@ -31,11 +31,14 @@ public:
     void update(float dtime);
     void draw();
     void end();
+    void showText() { this->text.renderText(Cam, "Testtext in der Main", 50.0f, 50.0f, 1.0f, Color()); };
+
 protected:
 	void createScene();
 	void createNormalTestScene();
 	void createShadowTestScene();
     void keyboardActivity(float& xRot, float& yRot, float& zRot);
+    
     Camera Cam;
     ModelList Models;
     GLFWwindow* pWindow;

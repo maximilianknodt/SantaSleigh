@@ -36,7 +36,7 @@
 
 Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048), text(Cam, 1200, 800) {
 	createScene();
-	//this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 48);
+	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 24);
 }
 
 void Application::start() {
@@ -49,10 +49,7 @@ void Application::start() {
 }
 
 void Application::update(float dtime) {
-	
-	//this->text.renderText(Cam, "Testtext zum Anschauen, ob er auch lang genug ist", 0.0f, 0.0f, 1.0f, Color());
-
-
+	this->text.renderText(Cam, "Testtext zum Anschauen", 300.0f, 100.0f, 1.0f, Color());
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
 	float shift = 0;		// zRot

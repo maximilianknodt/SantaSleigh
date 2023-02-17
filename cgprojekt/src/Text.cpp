@@ -8,28 +8,21 @@
 #define ASSET_DIRECTORY "../assets/"
 #endif
 
-Text::Text(BaseCamera& cam, unsigned int width, unsigned int height) {
+Text::Text(BaseCamera& cam, unsigned int width, unsigned int height) : VAO(0), VBO(0), charactersMap({}) {
 	bool loaded = this->load(ASSET_DIRECTORY "vsText.glsl", ASSET_DIRECTORY "fsText.glsl");
 	if (!loaded) {
 		std::cout << "ERROR: Text Shader konnten nicht geladen werden" << std::endl;
 	}
-	BaseShader::activate(cam);
-	Matrix m;
-	m.orthographic(width, height, 0.0, 1.0);
 
+	this->activate(cam);
+
+	Matrix m = Matrix().orthographic(width, height, 0.0, 1.0);
 	this->modelTransform(m);
 
-	this->ProjectionLoc = glGetUniformLocation(ShaderProgram, "Projection");
-	
-	setParameter(this->ProjectionLoc, m);
-	GLenum ErrorOne = glGetError();
+	this->assignLocations();
+	setParameter(this->ProjectionLoc, this->modelTransform());
+	setParameter(this->TextLoc, 0);
 
-	setParameter(this->ProjectionLoc, 0);
-	GLenum ErrorTwo = glGetError();
-	std::cout << ErrorTwo << std::endl;
-
-	//this->setParameter(this->getParameterID("projection"), this->modelTransform());
-	
 	// VAO und VBO fuer die Text Quads einstellen
 	// Generieren und Binden
 	glGenVertexArrays(1, &this->VAO);
@@ -37,7 +30,7 @@ Text::Text(BaseCamera& cam, unsigned int width, unsigned int height) {
 	glBindVertexArray(this->VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 	// Speicher des aktuell gebundenen (this->VBO) Buffers reservieren
-	glBufferData(GL_ARRAY_BUFFER, (sizeof(float) * 6 * 4), NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
 	glEnableVertexAttribArray(0);
 	// Spezifizierung des Draw-Verhaltens des VBOs 
 	// -> Typ = Float, nicht normalisieren, Byte-Abstand zwischen Vertex-Attributen
@@ -46,6 +39,12 @@ Text::Text(BaseCamera& cam, unsigned int width, unsigned int height) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	
+}
+
+void Text::assignLocations() {
+	this->ProjectionLoc = glGetUniformLocation(ShaderProgram, "projection");
+	this->TextLoc = glGetUniformLocation(ShaderProgram, "text");
+	this->TextColorLoc = glGetUniformLocation(ShaderProgram, "textColor");
 }
 
 void Text::loadFont(std::string font, unsigned int fontSize) {
@@ -65,7 +64,7 @@ void Text::loadFont(std::string font, unsigned int fontSize) {
 	FT_Set_Pixel_Sizes(face, 0, fontSize);
 	
 	// Pro Pixel verwenden wir ein Byte -> unterschiedliche Groessen moeglich,
-	// daher Sicherstellung, dass es keine Ausrichtungsproblem gibt
+	// daher Sicherstellung, dass es keine Ausrichtungsprobleme gibt
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	// Erstellung einer 8-Bit bmp Datei fuer die 128 ASCII Zeichen -> einfach halten
@@ -118,11 +117,10 @@ void Text::loadFont(std::string font, unsigned int fontSize) {
 
 void Text::renderText(BaseCamera& cam, std::string text, float x, float y, float scale, Color color) {
 	this->activate(cam);
-	this->setParameter(this->getParameterID("textColor"), color);
-	//glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.X, color.Y, color.Z);
+	this->setParameter(this->TextColorLoc, color);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindVertexArray(this->VAO);
+	glBindVertexArray(this->VAO);	// = VB.activate()
 
 	// ueber alle Charactere itterieren
 	std::string::const_iterator c;
@@ -159,5 +157,6 @@ void Text::renderText(BaseCamera& cam, std::string text, float x, float y, float
 	}
 	// reseten
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

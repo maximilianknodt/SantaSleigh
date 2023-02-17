@@ -84,6 +84,7 @@ int main()
             glfwPollEvents();
             App.update((float)delta);
             App.draw();
+            App.showText();
             glfwSwapBuffers(window);
         }
         App.end();

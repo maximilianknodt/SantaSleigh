@@ -20,6 +20,7 @@ public:
 	};
 
 	Text(BaseCamera& cam, unsigned int width, unsigned int height);
+	void assignLocations();
 	void renderText(BaseCamera& cam, std::string text, float x, float y, float scale, Color color);
 	void loadFont(std::string font, unsigned int fontSize);
 
@@ -28,6 +29,8 @@ protected:
 	unsigned int VAO;
 	unsigned int VBO;
 	GLint ProjectionLoc;
+	GLint TextLoc;
+	GLint TextColorLoc;
 };
 
 #endif
