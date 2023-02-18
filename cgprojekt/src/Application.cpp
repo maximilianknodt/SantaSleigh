@@ -190,6 +190,8 @@ void Application::draw() {
         (*it)->draw(Cam);
     }
 	ShaderLightMapper::instance().deactivate();
+
+	this->showText();
 	
     // 3. check once per frame for opengl errors
     GLenum Error = glGetError();
