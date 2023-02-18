@@ -34,7 +34,7 @@
 #endif
 
 
-Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048), text(Cam, 1200, 800) {
+Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048), text(Cam, 1200, 800), points(0) {
 	createScene();
 	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 24);
 }
@@ -49,7 +49,6 @@ void Application::start() {
 }
 
 void Application::update(float dtime) {
-	this->text.renderText(Cam, "Testtext zum Anschauen", 300.0f, 100.0f, 1.0f, Color());
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
 	float shift = 0;		// zRot
@@ -115,6 +114,16 @@ void Application::keyboardActivity(float& xRot, float& yRot, float& zRot) {
 		else yRot = -1.0f;
 	}
 }
+
+void Application::showText() { 
+	std::string text = "Punkte: ";
+	text += std::to_string(this->points);
+	float left = -580.0;
+	float top = 360.0;
+	Color color = Color(1.0, 1.0, 1.0);
+
+	this->text.renderText(Cam, text, left, top, 1.0f, color);
+};
 
 void Application::createScene() {
 	

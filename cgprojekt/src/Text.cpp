@@ -127,22 +127,24 @@ void Text::renderText(BaseCamera& cam, std::string text, float x, float y, float
 	for (c = text.begin(); c != text.end(); c++) {
 		Character ch = this->charactersMap[*c];
 
-		float xpos = x + ch.bearingX * scale;
-		float ypos = y + (this->charactersMap['H'].bearingY - ch.bearingY) * scale;
-		// ----^ Achtung, zwei unterschiedliche Varianten, je nach opengl Seite
+		float xpos = 0;
+		float ypos = 0;
+
+		xpos = x + ch.bearingX * scale;
+		ypos = y - (ch.height - ch.bearingY) * scale;
 
 		float w = ch.width * scale;
 		float h = ch.height * scale;
 
 		// fuer jeden Character VBO updaten
 		float vertices[6][4] = {
-			{ xpos,     ypos + h,   0.0f, 1.0f },
-			{ xpos + w, ypos,       1.0f, 0.0f },
-			{ xpos,     ypos,       0.0f, 0.0f },
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos,     ypos,       0.0f, 1.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
 
-			{ xpos,     ypos + h,   0.0f, 1.0f },
-			{ xpos + w, ypos + h,   1.0f, 1.0f },
-			{ xpos + w, ypos,       1.0f, 0.0f }
+			{ xpos,     ypos + h,   0.0f, 0.0f },
+			{ xpos + w, ypos,       1.0f, 1.0f },
+			{ xpos + w, ypos + h,   1.0f, 0.0f }
 		};
 
 		glBindTexture(GL_TEXTURE_2D, ch.textureID);

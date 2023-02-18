@@ -31,7 +31,7 @@ public:
     void update(float dtime);
     void draw();
     void end();
-    void showText() { this->text.renderText(Cam, "Testtext in der Main", 50.0f, 50.0f, 1.0f, Color()); };
+    void showText();
 
 protected:
 	void createScene();
@@ -48,6 +48,8 @@ protected:
     Deer* pDeer;
     SantaSleigh* pSantaSleigh;
     Text text;
+
+    int points;
 };
 
 #endif /* Application_hpp */
