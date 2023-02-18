@@ -1,3 +1,5 @@
+// Nach Quelle: https://learnopengl.com/In-Practice/Text-Rendering
+
 #include "Text.h"
 #include <iostream>
 #include <GL/glew.h>

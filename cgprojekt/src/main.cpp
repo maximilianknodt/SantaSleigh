@@ -58,7 +58,7 @@ int main()
 
     {
         double lastTime = 0;
-        Application App(window);
+        Application App(window, WindowWidth, WindowHeight);
         App.start();
         while (!glfwWindowShouldClose(window)) {
             // Nur fuer das Testen, um per ESC aus dem Fullscreen rauszukommen, nicht funktionsfaehig

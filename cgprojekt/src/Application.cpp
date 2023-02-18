@@ -41,7 +41,14 @@
 #define MAX_BUILDINGS 10
 #define MAX_TRAVEL_DIST 4
 
-Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048), text(Cam, 1200, 800), points(0) {
+Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
+	pWindow(pWin), Cam(pWin),
+	pModel(NULL), ShadowGenerator(2048, 2048),
+	windowWidth(wWidth),
+	windowHeight(wHeight),
+	text(Cam, windowWidth, windowHeight),
+	points(0)
+{
 	createScene();
 	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 24);
 }
@@ -142,6 +149,7 @@ void Application::update(float dtime) {
 
 		for (Building* building : this->pCity->getTargets()) {
 			if (checkGiftCollision(this->pGift, building->building)) {
+				this->points++;
 				std::cout << "DELIVERED!" << std::endl;
 				this->isGifting = false;
 				this->Models.remove(this->pGift);
@@ -213,8 +221,10 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& dri
 void Application::showText() { 
 	std::string text = "Punkte: ";
 	text += std::to_string(this->points);
-	float left = -580.0;
-	float top = 360.0;
+
+	float padding = 20.0;
+	float left = -1 * (this->windowWidth / 2 - padding);
+	float top = (this->windowHeight / 2) - (2 * padding);
 	Color color = Color(1.0, 1.0, 1.0);
 
 	this->text.renderText(Cam, text, left, top, 1.0f, color);

@@ -30,7 +30,7 @@ class Application {
 public:
     typedef std::list<BaseModel*> ModelList;
     typedef std::list<BaseModel*> StarList;
-    Application(GLFWwindow* pWin);
+    Application(GLFWwindow* pWin, float wWidth, float wHeight);
     void start();
     void update(float dtime);
     void draw();
@@ -48,6 +48,10 @@ protected:
 
     bool isGifting;
     float pGiftTravel;
+    int points;
+    float windowWidth;
+    float windowHeight;
+
     Camera Cam;
     ModelList Models;
     GLFWwindow* pWindow;
@@ -62,8 +66,6 @@ protected:
     City* pCity; 
     Model* pGift;
     Text text;
-
-    int points;
 };
 
 #endif /* Application_hpp */

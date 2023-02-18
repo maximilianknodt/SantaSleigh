@@ -28,6 +28,7 @@ protected:
 	std::map<char, Character> charactersMap;
 	unsigned int VAO;
 	unsigned int VBO;
+
 	GLint ProjectionLoc;
 	GLint TextLoc;
 	GLint TextColorLoc;
