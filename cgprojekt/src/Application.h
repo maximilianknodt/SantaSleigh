@@ -24,6 +24,7 @@
 #include "Deer.h"
 #include "LineBoxModel.h"
 #include "City.h"
+#include "Text.h"
 
 class Application {
 public:
@@ -35,6 +36,8 @@ public:
     void draw();
     void end();
     Vector calc3DRay(float x, float y, Vector& Pos);
+    void showText();
+
 protected:
 	void createScene();
     void keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive);
@@ -58,6 +61,9 @@ protected:
     StarList pStars;
     City* pCity; 
     Model* pGift;
+    Text text;
+
+    int points;
 };
 
 #endif /* Application_hpp */

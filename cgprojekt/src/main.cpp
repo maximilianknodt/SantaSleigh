@@ -42,8 +42,7 @@ int main()
 
     GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", NULL, NULL);
 
-    if (!window)
-    {
+    if (!window){
         fprintf(stderr, "ERROR: can not open window with GLFW3\n");
         glfwTerminate();
         return 1;
@@ -84,6 +83,7 @@ int main()
             glfwPollEvents();
             App.update((float)delta);
             App.draw();
+            App.showText();
             glfwSwapBuffers(window);
         }
         App.end();

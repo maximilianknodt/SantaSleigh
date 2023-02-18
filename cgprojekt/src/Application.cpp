@@ -28,6 +28,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include "Text.h"
 
 
 #ifdef WIN32
@@ -40,8 +41,9 @@
 #define MAX_BUILDINGS 10
 #define MAX_TRAVEL_DIST 4
 
-Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048) {
+Application::Application(GLFWwindow* pWin) : pWindow(pWin), Cam(pWin), pModel(NULL), ShadowGenerator(2048, 2048), text(Cam, 1200, 800), points(0) {
 	createScene();
+	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 24);
 }
 
 void Application::createScene() {
@@ -207,6 +209,16 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& dri
 		drive = true;
 	}
 }
+
+void Application::showText() { 
+	std::string text = "Punkte: ";
+	text += std::to_string(this->points);
+	float left = -580.0;
+	float top = 360.0;
+	Color color = Color(1.0, 1.0, 1.0);
+
+	this->text.renderText(Cam, text, left, top, 1.0f, color);
+};
 
 // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
 Matrix Application::randomTranslation() {

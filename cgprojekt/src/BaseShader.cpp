@@ -18,6 +18,7 @@ BaseShader::BaseShader() : LightUniformBuffer(GL_INVALID_INDEX)
 
 bool BaseShader::load( const char* VertexShaderFile, const char* FragmentShaderFile )
 {
+    GLenum Error = glGetError();
     unsigned int VSFileSize=0;
     unsigned int FSFileSize=0;
     char* VSFileData = NULL;
@@ -52,11 +53,14 @@ GLuint BaseShader::createShaderProgram( const char* VScode, const char* FScode )
     char ShaderLog[LogSize];
     GLsizei WrittenToLog=0;
     GLint Success = 0;
+
+    GLenum Error = glGetError();
     
     GLuint VS = glCreateShader(GL_VERTEX_SHADER);
+    Error = glGetError();
     GLuint FS = glCreateShader(GL_FRAGMENT_SHADER);
     
-    GLenum Error = glGetError();
+    Error = glGetError();
     if(Error!=0)
     {
         std::cout << "Unable to create shader objects. Please ensure that the Shader is used for the first time AFTER successful creation of an OpenGL context!";

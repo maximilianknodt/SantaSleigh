@@ -112,6 +112,12 @@
     <ClInclude Include="src\Building.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TextShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp">
@@ -209,6 +215,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Building.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
