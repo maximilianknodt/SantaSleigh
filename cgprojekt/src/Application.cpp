@@ -50,7 +50,7 @@ Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
 	points(0)
 {
 	createScene();
-	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Regular.ttf", 24);
+	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Medium.ttf", 24);
 }
 
 void Application::createScene() {
