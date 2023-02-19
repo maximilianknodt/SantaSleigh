@@ -65,6 +65,8 @@ protected:
     StarList pStars;
     City* pCity; 
     Model* pGift;
+    Model* pGround;
+    Model* pSky;
     Text text;
 };
 

@@ -3,6 +3,7 @@
 #define Building_hpp
 
 #include "Model.h"
+#include "Lights.h"
 #include <list>
 
 class Building : public BaseModel {

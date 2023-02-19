@@ -53,6 +53,7 @@ void Building::update(float dtime) {
 		float upDown = 0.0f;
 		upDown = amplitude * sin(PI * frequency * totalTime);
 		this->star->transform(this->star->transform() * Matrix().translation(0.0f, upDown, 0.0f));
+		this->star->transform(this->star->transform() * Matrix().rotationY(1 *dtime));
 	}
 }
 

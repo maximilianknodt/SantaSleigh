@@ -55,11 +55,19 @@ Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
 
 void Application::createScene() {
 	// Umgebung als Cube: Skybox
-	pModel = new Model(ASSET_DIRECTORY "skybox.obj", false);
-	pModel->shader(new PhongShader(), true);
-	pModel->shadowCaster(false);
-	pModel->transform(pModel->transform() * Matrix().scale(5));
-	Models.push_back(pModel);
+	this->pSky = new Model(ASSET_DIRECTORY "skybox.obj", false);
+	this->pSky->shader(new PhongShader(), true);
+	this->pSky->shadowCaster(false);
+	this->pSky->transform(pSky->transform() * Matrix().scale(5));
+	this->pSky->transformBoundingBox(this->pSky->transform());
+	Models.push_back(pSky);
+
+	this->pGround = new Model(ASSET_DIRECTORY "buildings/Ground.obj", false);
+	this->pGround->shader(new PhongShader(), true);
+	this->pGround->shadowCaster(false);
+	this->pGround->transform(pGround->transform() * Matrix().scale(4));
+	this->pGround->transformBoundingBox(this->pGround->transform());
+	Models.push_back(pGround);
 
 	// Erstellen der Map
 	this->pCity = new City();
@@ -68,7 +76,7 @@ void Application::createScene() {
 	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/watch_tower/watch_tower.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
-	this->pCity->loadModels(buildings, 4, 4, 4);
+	this->pCity->loadModels(buildings, 4, 4, 8);
 	Models.push_back(pCity);
 
 	this->pSantaSleigh = new SantaSleigh();
@@ -124,6 +132,11 @@ void Application::update(float dtime) {
 		if (this->checkCollision(this->pSantaSleigh->sleigh, model->building)) {
 			this->pSantaSleigh->reset();
 		}
+	}
+
+	if (this->checkCollision(this->pSantaSleigh->sleigh, this->pGround) 
+		|| !this->checkCollision(this->pSantaSleigh->sleigh, this->pSky)) {
+		this->pSantaSleigh->reset();
 	}
 
 	if (glfwGetKey(this->pWindow, GLFW_KEY_R)) {
@@ -183,14 +196,14 @@ void Application::draw() {
 	
     // 1. clear screen
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	ShaderLightMapper::instance().activate();
     // 2. setup shaders and draw models
     for( ModelList::iterator it = Models.begin(); it != Models.end(); ++it ) {
         (*it)->draw(Cam);
     }
 	ShaderLightMapper::instance().deactivate();
-
+	
 	this->showText();
 	
     // 3. check once per frame for opengl errors
