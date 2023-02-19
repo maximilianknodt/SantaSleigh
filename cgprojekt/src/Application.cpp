@@ -82,7 +82,7 @@ void Application::createScene() {
 	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/FairyTower/FairyTower.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
-	this->pCity->loadModels(buildings, 5, 5, 10);
+	this->pCity->loadModels(buildings, 5, 5, 25);
 	Models.push_back(pCity);
 
 	this->pSantaSleigh = new SantaSleigh();

@@ -43,18 +43,20 @@ bool City::loadModels(std::vector<const char*> buildings, int width, int length,
 			Building::BuildingProperties properties {
 				buildings.at(randInt),
 				ASSET_DIRECTORY "Gold_Star.obj",
-				Matrix().translation(wDistance * wPrefix, 0, lDistance * lPrefix),
+				Matrix().scale(2.0f).translation(wDistance * wPrefix, 0, lDistance * lPrefix),
 				randomBool()
 			};
 			building->loadModels(properties);
 			models.push_back(building);
 			if (properties.target) targets.push_back(building);
 
-			std::cout << "X: " << wDistance << std::endl;
-			std::cout << "Z: " << lDistance << std::endl;
-			wDistance += current->boundingBox().size().X + streetWidth;
+			if (j % 2 == 0) {
+				wDistance += current->boundingBox().size().X + streetWidth;
+			}
 		}
-		lDistance += streetWidth;
+		if (i % 2 == 0) {
+			lDistance += streetWidth;
+		}
 	}
 	return true;
 }
