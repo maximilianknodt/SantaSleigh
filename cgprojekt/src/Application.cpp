@@ -58,25 +58,31 @@ void Application::createScene() {
 	this->pSky = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	this->pSky->shader(new PhongShader(), true);
 	this->pSky->shadowCaster(false);
-	this->pSky->transform(pSky->transform() * Matrix().scale(5));
+	this->pSky->transform(pSky->transform() * Matrix().scale(1));
 	this->pSky->transformBoundingBox(this->pSky->transform());
 	Models.push_back(pSky);
 
 	this->pGround = new Model(ASSET_DIRECTORY "buildings/Ground.obj", false);
 	this->pGround->shader(new PhongShader(), true);
 	this->pGround->shadowCaster(false);
-	this->pGround->transform(pGround->transform() * Matrix().scale(4));
+	this->pGround->transform(pGround->transform() * Matrix().scale(2));
 	this->pGround->transformBoundingBox(this->pGround->transform());
 	Models.push_back(pGround);
+
+	DirectionalLight* dl = new DirectionalLight();
+	dl->direction(Vector(0.2f, -1, 1));
+	dl->color(Color(0.25, 0.25, 0.5));
+	dl->castShadows(true);
+	ShaderLightMapper::instance().addLight(dl);
 
 	// Erstellen der Map
 	this->pCity = new City();
 	std::vector<const char*> buildings;
 	buildings.push_back(ASSET_DIRECTORY "buildings/Brick_Building/Brick_Building.obj");
 	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
-	buildings.push_back(ASSET_DIRECTORY "buildings/watch_tower/watch_tower.obj");
+	buildings.push_back(ASSET_DIRECTORY "buildings/FairyTower/FairyTower.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
-	this->pCity->loadModels(buildings, 4, 4, 8);
+	this->pCity->loadModels(buildings, 5, 5, 10);
 	Models.push_back(pCity);
 
 	this->pSantaSleigh = new SantaSleigh();

@@ -36,7 +36,7 @@ bool Building::loadModels(BuildingProperties properties)
 		this->star->load(properties.fStar);
 		this->star->transform(properties.position);
 		this->star->transform(this->star->transform() * Matrix().translation(0, height + 4, 0));
-		this->star->transform(this->star->transform() * Matrix().scale(0.10));
+		this->star->transform(this->star->transform() * Matrix().scale(0.10));		
 	}
 	return true;
 }

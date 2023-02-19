@@ -29,7 +29,11 @@ bool City::loadModels(std::vector<const char*> buildings, int width, int length,
 	Model* current;
 	for (int i = 0; i < width; i++) {
 		wDistance = 0;
+		float lPrefix = 1;
+		if (i % 2 != 0) { lPrefix = -1; };
 		for (int j = 0; j < length; j++) {
+			float wPrefix = 1;
+			if (j % 2 != 0) { wPrefix = -1; };
 			current = new Model();
 			current->shader(new PhongShader());
 			int randInt = random(rng);
@@ -39,7 +43,7 @@ bool City::loadModels(std::vector<const char*> buildings, int width, int length,
 			Building::BuildingProperties properties {
 				buildings.at(randInt),
 				ASSET_DIRECTORY "Gold_Star.obj",
-				Matrix().translation(wDistance, 0, lDistance),
+				Matrix().translation(wDistance * wPrefix, 0, lDistance * lPrefix),
 				randomBool()
 			};
 			building->loadModels(properties);
@@ -50,7 +54,7 @@ bool City::loadModels(std::vector<const char*> buildings, int width, int length,
 			std::cout << "Z: " << lDistance << std::endl;
 			wDistance += current->boundingBox().size().X + streetWidth;
 		}
-		lDistance += 10;
+		lDistance += streetWidth;
 	}
 	return true;
 }
