@@ -20,7 +20,11 @@ Building::~Building() {
 	delete this->building;
 	delete this->star;
 }
-
+/// <summary>
+/// Methode zum Laden eines Gebäudes
+/// </summary>
+/// <param name="properties">Build properties für ein Gebäude</param>
+/// <returns></returns>
 bool Building::loadModels(BuildingProperties properties)
 {
 	this->properties = properties;
@@ -40,11 +44,17 @@ bool Building::loadModels(BuildingProperties properties)
 	}
 	return true;
 }
-
+/// <summary>
+/// Setzt die property "target" auf false.
+/// </summary>
 void Building::removeTarget() {
 	properties.target = false;
 }
 
+/// <summary>
+/// Update Methode aktualisiert das Gebäude. In diesem Fall wird das Targetsymbol animiert.
+/// </summary>
+/// <param name="dtime">Deltatime</param>
 void Building::update(float dtime) {
 	if (this->properties.target) {
 		this->totalTime += dtime;
@@ -56,7 +66,10 @@ void Building::update(float dtime) {
 		this->star->transform(this->star->transform() * Matrix().rotationY(1 *dtime));
 	}
 }
-
+/// <summary>
+/// Draw Methode
+/// </summary>
+/// <param name="cam">Kameraobjekt</param>
 void Building::draw(const BaseCamera& cam) {
 	this->building->draw(cam);
 	if(properties.target) this->star->draw(cam);

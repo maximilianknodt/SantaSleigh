@@ -19,7 +19,14 @@ City::~City() {
 		delete model;
 	}
 }
-
+/// <summary>
+/// Methode zum Laden der Stadt
+/// </summary>
+/// <param name="buildings">Vector mit Pfaden zu Geb‰udeobjekten</param>
+/// <param name="width">Anzahl der Geb‰ude in der Breite</param>
+/// <param name="length">Anzahl der Geb‰ude in der L‰nge</param>
+/// <param name="streetWidth">"Straﬂenbreite", also Abstand zwischen Geb‰uden</param>
+/// <returns></returns>
 bool City::loadModels(std::vector<const char*> buildings, int width, int length, int streetWidth) {
 	std::random_device dev;
 	std::mt19937 rng(dev());
@@ -61,9 +68,10 @@ bool City::loadModels(std::vector<const char*> buildings, int width, int length,
 	return true;
 }
 
-void City::reset() {
-}
-
+/// <summary>
+/// Aktualisiert alle Geb‰ude in der Stadt.
+/// </summary>
+/// <param name="dtime">Deltatime</param>
 void City::update(float dtime) {
 	for (ModelList::iterator it = models.begin(); it != models.end(); it++) {
 		Building* model = *it;
@@ -71,6 +79,10 @@ void City::update(float dtime) {
 	}
 }
 
+/// <summary>
+/// Zeichnet alle Geb‰ude der Stadt.
+/// </summary>
+/// <param name="cam">Kameraobjekt</param>
 void City::draw(const BaseCamera& cam) {
 	for (ModelList::iterator it = models.begin(); it != models.end(); it++) {
 		Building* model = *it;
@@ -78,10 +90,18 @@ void City::draw(const BaseCamera& cam) {
 	}
 }
 
+/// <summary>
+/// Entfernt ein Targetgeb‰ude aus der Targetliste.
+/// </summary>
+/// <param name="target"></param>
 void City::removeTarget(Building* target) {
 	this->targets.remove(target);
 }
 
+/// <summary>
+/// Generiert einen zuf‰lligen boolschen Wert.
+/// </summary>
+/// <returns></returns>
 bool City::randomBool() {
 	std::random_device dev;
 	std::mt19937 rng(dev());
