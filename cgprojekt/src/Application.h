@@ -18,10 +18,7 @@
 #include "indexbuffer.h"
 #include "basemodel.h"
 #include "ShadowMapGenerator.h"
-#include "terrain.h"
 #include "SantaSleigh.h"
-#include "Sleigh.h"
-#include "Deer.h"
 #include "LineBoxModel.h"
 #include "City.h"
 #include "Text.h"
@@ -35,7 +32,6 @@ public:
     void update(float dtime);
     void draw();
     void end();
-    Vector calc3DRay(float x, float y, Vector& Pos);
     void showTexts();
     void showPoints();
     void showKeyBindings();
@@ -64,9 +60,6 @@ protected:
     GLFWwindow* pWindow;
 	BaseModel* pModel;
 	ShadowMapGenerator ShadowGenerator;
-    Terrain* pTerrain;
-    Sleigh* pSleigh;
-    Deer* pDeer;
     SantaSleigh* pSantaSleigh;
     LineBoxModel* pSleighBox;
     StarList pStars;

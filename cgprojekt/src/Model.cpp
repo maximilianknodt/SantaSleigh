@@ -105,8 +105,6 @@ void Model::loadMeshes(const aiScene *pScene, bool FitSize) {
                 mesh.VB.addTexcoord0(aiVTxt.x, -aiVTxt.y);
             }
 
-            // Praktikum 6 Aufgabe 3
-            // Schritt 1 a
             if (aiMesh->HasTangentsAndBitangents()) {
                 aiVector3D tangent = aiMesh->mTangents[j];
                 aiVector3D bitangent = aiMesh->mBitangents[j];
@@ -192,7 +190,6 @@ void Model::loadMaterials(const aiScene *pScene)
         std::string ap = this->Path + apString;
         mat.DiffTex = Texture().LoadShared(ap.c_str());
 
-        // P6 Aufgabe 3 Schritt 1 b
         if (!apString.empty()) {
             std::string normalMapPath = apString;
             // Finde den letzten Punkt im Pfad und speichere die Position
@@ -292,7 +289,6 @@ void Model::applyMaterial(unsigned int index)
     pPhong->specularExp(pMat->SpecExp);
     pPhong->specularColor(pMat->SpecColor);
     pPhong->diffuseTexture(pMat->DiffTex);
-    // P6 Aufgabe 3 Schritt 1 c
     pPhong->normalTexture(pMat->NormalMapTex);
 }
 

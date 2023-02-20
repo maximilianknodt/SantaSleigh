@@ -68,6 +68,7 @@ void Application::createScene() {
 	this->pSky->transformBoundingBox(this->pSky->transform());
 	Models.push_back(pSky);
 
+	// Boden
 	this->pGround = new Model(ASSET_DIRECTORY "buildings/Ground.obj", false);
 	this->pGround->shader(new PhongShader(), true);
 	this->pGround->shadowCaster(false);
@@ -85,12 +86,12 @@ void Application::createScene() {
 	this->pCity = new City();
 	std::vector<const char*> buildings;
 	buildings.push_back(ASSET_DIRECTORY "buildings/Brick_Building/Brick_Building.obj");
-	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/FairyTower/FairyTower.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
 	this->pCity->loadModels(buildings, 5, 5, 40);
 	Models.push_back(pCity);
 
+	// Erstellen des Schlittens
 	this->pSantaSleigh = new SantaSleigh();
 	this->pSantaSleigh->shader(new PhongShader(), true);
 	this->pSantaSleigh->loadModels(
@@ -123,24 +124,12 @@ void Application::update(float dtime) {
 
 	this->pSantaSleigh->steer(upDown, leftRight, shift, drive);
 	this->pSantaSleigh->update(dtime);
-	// ggf. fuer weichere Cupdateamerabewegung nutzbar ------------------------------
-	// Laenge der Objektbewegung berechnen und auf Cam-Position anwenden
-	float smoothness = 1;
-	Vector currentObjPos, lastObjPos, travelDist, camPos;
-	currentObjPos = this->pSantaSleigh->getPosition();
-	lastObjPos = this->pSantaSleigh->getLastPosition();
-	travelDist = currentObjPos - lastObjPos;
-	camPos = Cam.position() + (travelDist * smoothness);
-	// Letzte Position des Objekts setzen
-	this->pSantaSleigh->setLastPosition(currentObjPos);
-	// ------------------------------------------------------------------------
 
 	Matrix mCam, mDistance;
 	mDistance.translation(Vector(0, 4, -15));
 	mCam = this->pSantaSleigh->transform() * mDistance;
 
-
-	// Kollisionen
+	// Kollisionserkennung Schlitten mit allen Gebäuden
 	for (Building* model : this->pCity->getModels()) {
 		model->update(dtime);
 		if (this->checkCollision(this->pSantaSleigh->sleigh, model->building)) {
@@ -150,6 +139,7 @@ void Application::update(float dtime) {
 		}
 	}
 
+	// Kollisionserkennung Schlitten mit Umgebung
 	if (this->checkCollision(this->pSantaSleigh->sleigh, this->pGround) 
 		|| !this->checkCollision(this->pSantaSleigh->sleigh, this->pSky)) {
 		this->pSantaSleigh->reset();
@@ -157,6 +147,7 @@ void Application::update(float dtime) {
 		this->deductionTime = glfwGetTime();
 	}
 
+	// Schießen
 	if (glfwGetKey(this->pWindow, GLFW_KEY_R)) {
 		if (!isGifting) {
 			pGift = new Model();
@@ -181,7 +172,6 @@ void Application::update(float dtime) {
 		for (Building* building : this->pCity->getTargets()) {
 			if (checkGiftCollision(this->pGift, building->building)) {
 				this->points++;
-				std::cout << "DELIVERED!" << std::endl;
 				this->isGifting = false;
 				this->Models.remove(this->pGift);
 				building->removeTarget();
@@ -192,18 +182,13 @@ void Application::update(float dtime) {
 		}
 
 		Matrix m;
-		//m.rotationZ(45 * dtime);
-		m.translation(0, 0, 200 * dtime);
+		m.translation(0, 0, 400 * dtime);
 		this->pGift->transform(this->pGift->transform() * m);
 		this->pGift->transformBoundingBox(this->pGift->transform());
 	}
 
-	if (glfwGetKey(this->pWindow, GLFW_KEY_T)) {
-		this->isGifting = false;
-	}
-
 	Cam.setPosition(mCam.translation());
-	Cam.setTarget(currentObjPos);
+	Cam.setTarget(this->pSantaSleigh->getPosition());
 	Cam.setUp(mCam.up());
 
     Cam.update();
@@ -342,9 +327,6 @@ bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
 	Vector minS = bbox_sleigh.Min;
 	Vector maxS = bbox_sleigh.Max;
 
-	// std::cout << "MinH: X = " << minB.X << "\tY = " << minB.Y << "\tZ = " << minB.Z << "/\tMaxH: X = " << maxB.X << "\tY = " << maxB.Y << "\tZ = " << maxB.Z << std::endl;
-	// std::cout << "MaxS: X = " << maxS.X << "\tY = " << maxS.Y << "\tZ = " << maxS.Z << "/\tMinS: X = " << minS.X << "\tY = " << minS.Y << "\tZ = " << minS.Z << std::endl;
-
 	if ( (bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
 		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
 		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
@@ -363,29 +345,10 @@ bool Application::checkGiftCollision(BaseModel* sleigh, BaseModel* model_b) {
 	Vector minS = bbox_sleigh.Min;
 	Vector maxS = bbox_sleigh.Max;
 
-	// std::cout << "MinH: X = " << minB.X << "\tY = " << minB.Y << "\tZ = " << minB.Z << "/\tMaxH: X = " << maxB.X << "\tY = " << maxB.Y << "\tZ = " << maxB.Z << std::endl;
-	// std::cout << "MaxS: X = " << maxS.X << "\tY = " << maxS.Y << "\tZ = " << maxS.Z << "/\tMinS: X = " << minS.X << "\tY = " << minS.Y << "\tZ = " << minS.Z << std::endl;
-
 	if ((bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
 		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
 		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
 		collision = true;
 	}
 	return collision;
-}
-
-
-
-Vector Application::calc3DRay(float x, float y, Vector& Pos)
-{
-	Matrix projection = Cam.getProjectionMatrix();
-	projection.invert();
-	Matrix view = Cam.getViewMatrix();
-	view.invert();
-	Pos = view.translation();
-
-	// Inverse Projektionsmatrix auf Mauszeigerkoordinate angewandt
-	Vector mouse(x, y, 0);
-	Vector direction = projection.transformVec4x4(mouse);
-	return view.transformVec3x3(direction);
 }
