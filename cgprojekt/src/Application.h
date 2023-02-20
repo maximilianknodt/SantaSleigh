@@ -74,6 +74,7 @@ protected:
     Model* pGround;
     Model* pSky;
     Text text;
+    Text textDied;
 };
 
 #endif /* Application_hpp */

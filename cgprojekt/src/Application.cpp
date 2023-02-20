@@ -47,6 +47,7 @@ Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
 	windowWidth(wWidth),
 	windowHeight(wHeight),
 	text(Cam, windowWidth, windowHeight),
+	textDied(Cam, windowWidth, windowHeight),
 	points(0),
 	startTime(0),
 	deductionTime(0),
@@ -55,6 +56,7 @@ Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
 {
 	createScene();
 	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Medium.ttf", 24);
+	this->textDied.loadFont(ASSET_DIRECTORY "fonts/OpenSans-SemiBoldItalic.ttf", 28);
 }
 
 void Application::createScene() {
@@ -293,13 +295,12 @@ void Application::showKeyBindings() {
 }
 
 void Application::showPointDeduction() {
-	std::string text = "Du bist gestorben.";
-	float left = -1 * (this->windowWidth / 2 - 140);
-	float right = this->windowWidth / 2 - 240;
+	std::string text = "Du bist gestorben";
+	float right = this->windowWidth / 2 - 250;
 	float top = (this->windowHeight / 2) - 40;
 	Color color = Color(1.0, 0.1, 0.3);
 
-	this->text.renderText(Cam, text, right, top, 1.0f, color);
+	this->textDied.renderText(Cam, text, right, top, 1.0f, color);
 }
 
 // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
