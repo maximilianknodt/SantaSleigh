@@ -3,6 +3,7 @@
 #define SantaSleigh_hpp
 
 #include "Model.h"
+#include "Lights.h"
 
 class SantaSleigh : public BaseModel {
 public:
