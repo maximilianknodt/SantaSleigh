@@ -14,7 +14,6 @@ public:
 	void update(float dtime);
 	virtual void draw(const BaseCamera& Cam);
 
-	// ggf. fuer weichere Camerabewegung nutzbar
 	Vector getPosition();
 	Vector getLastPosition();
 	void setLastPosition(const Vector lastPos);

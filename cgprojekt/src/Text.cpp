@@ -43,12 +43,20 @@ Text::Text(BaseCamera& cam, unsigned int width, unsigned int height) : VAO(0), V
 	
 }
 
+/// <summary>
+/// Ermittelt die Lokations der Uniform-Variablen der Shader.
+/// </summary>
 void Text::assignLocations() {
 	this->ProjectionLoc = glGetUniformLocation(ShaderProgram, "projection");
 	this->TextLoc = glGetUniformLocation(ShaderProgram, "text");
 	this->TextColorLoc = glGetUniformLocation(ShaderProgram, "textColor");
 }
 
+/// <summary>
+/// Erzeugt per FreeType Library fuer die uebergebene Schriftart die ersten 128 Schriftzeichen als Texturen.
+/// </summary>
+/// <param name="font">zu ladende Schriftart</param>
+/// <param name="fontSize">Groesse der Schriftart</param>
 void Text::loadFont(std::string font, unsigned int fontSize) {
 	this->charactersMap.clear();
 
@@ -117,6 +125,15 @@ void Text::loadFont(std::string font, unsigned int fontSize) {
 	FT_Done_FreeType(ft);
 }
 
+/// <summary>
+/// Rendert den uebergebenen Text an angegebener Position mit uebergebener Farbe, unter Beruecksichtigung der einzelnen Glyphen Masse.
+/// </summary>
+/// <param name="cam">BaseCamera</param>
+/// <param name="text">darzustellender Text</param>
+/// <param name="x">Position x</param>
+/// <param name="y">Position y</param>
+/// <param name="scale">Scalierungsfactor</param>
+/// <param name="color">Schriftfarbe</param>
 void Text::renderText(BaseCamera& cam, std::string text, float x, float y, float scale, Color color) {
 	this->activate(cam);
 	this->setParameter(this->TextColorLoc, color);
@@ -156,8 +173,8 @@ void Text::renderText(BaseCamera& cam, std::string text, float x, float y, float
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		// Quad rendern
 		glDrawArrays(GL_TRIANGLES, 0, 6);
-		// Cursor fuer naechste Glyphe ausrichten (note that advance is number of 1/64 pixels)
-		x += (ch.advance >> 6) * scale;	// bitshift by 6 to get value in pixels (2^6 = 64)
+		// Cursor fuer naechste Glyphe ausrichten
+		x += (ch.advance >> 6) * scale;	// bitshift
 	}
 	// reseten
 	glBindVertexArray(0);

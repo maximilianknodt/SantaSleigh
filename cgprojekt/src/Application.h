@@ -38,7 +38,7 @@ public:
     void showPointDeduction();
 
 protected:
-	void createScene();
+	void createSantaWorld();
     void keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive);
     bool checkCollision(BaseModel* model_a, BaseModel* model_b);
     bool checkGiftCollision(BaseModel* sleigh, BaseModel* model_b);

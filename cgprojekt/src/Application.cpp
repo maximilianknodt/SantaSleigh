@@ -54,12 +54,15 @@ Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
 	option(false),
 	pointDeduction(false)
 {
-	createScene();
+	createSantaWorld();
 	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Medium.ttf", 24);
 	this->textDied.loadFont(ASSET_DIRECTORY "fonts/OpenSans-SemiBoldItalic.ttf", 28);
 }
 
-void Application::createScene() {
+/// <summary>
+/// Laedt die Welt mit den verschiedenen Gebaueden, dem Rentierschlitten und Lichtern.
+/// </summary>
+void Application::createSantaWorld() {
 	// Umgebung als Cube: Skybox
 	this->pSky = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	this->pSky->shader(new PhongShader(), true);
@@ -75,12 +78,6 @@ void Application::createScene() {
 	this->pGround->transform(pGround->transform() * Matrix().scale(3));
 	this->pGround->transformBoundingBox(this->pGround->transform());
 	Models.push_back(pGround);
-
-	DirectionalLight* dl = new DirectionalLight();
-	dl->direction(Vector(0.2f, -1, 1));
-	dl->color(Color(0.25, 0.25, 0.5));
-	dl->castShadows(true);
-	ShaderLightMapper::instance().addLight(dl);
 
 	// Erstellen der Map
 	this->pCity = new City();
@@ -103,9 +100,18 @@ void Application::createScene() {
 	Models.push_back(pSantaSleigh);
 	this->pGiftTravel = MAX_TRAVEL_DIST;
 
+	DirectionalLight* dl = new DirectionalLight();
+	dl->direction(Vector(0.2f, -1, 1));
+	dl->color(Color(0.25, 0.25, 0.5));
+	dl->castShadows(true);
+	ShaderLightMapper::instance().addLight(dl);
+
 	this->startTime = glfwGetTime();
 }
 
+/// <summary>
+/// Aktiviert Tiefenvergleich, das nicht Rendern von Rueckseiten, Farbmischung und korrekte Transparenzmischung.
+/// </summary>
 void Application::start() {
     glEnable (GL_DEPTH_TEST); // enable depth-testing
     glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
@@ -115,6 +121,10 @@ void Application::start() {
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+/// <summary>
+/// Aktuallisiert die Szene, wird pro Frame aufgerufen.
+/// </summary>
+/// <param name="dtime">Zeit zwischen zwei Frames</param>
 void Application::update(float dtime) {
 	float upDown = 0;		// xRot
 	float leftRight = 0;	// yRot
@@ -170,7 +180,7 @@ void Application::update(float dtime) {
 		}
 
 		for (Building* building : this->pCity->getTargets()) {
-			if (checkGiftCollision(this->pGift, building->building)) {
+			if (checkCollision(this->pGift, building->building)) {
 				this->points++;
 				this->isGifting = false;
 				this->Models.remove(this->pGift);
@@ -194,6 +204,10 @@ void Application::update(float dtime) {
     Cam.update();
 }
 
+/// <summary>
+/// Ruft Draw Methoden der einzelnen Objekte der ModelLauf, ruft die Methode zum Rendern der Texte auf
+/// und prueft auf geworfene OpenGL-Fehler innerhalb des Programms.
+/// </summary>
 void Application::draw() {
 	ShadowGenerator.generate(Models);
 	
@@ -215,6 +229,9 @@ void Application::draw() {
     assert(Error==0);
 }
 
+/// <summary>
+/// Loescht alle Objekte der ModelListe.
+/// </summary>
 void Application::end() {
     for( ModelList::iterator it = Models.begin(); it != Models.end(); ++it )
         delete *it;
@@ -222,6 +239,13 @@ void Application::end() {
     Models.clear();
 }
 
+/// <summary>
+/// Die Methode erkennt bestimmte Tastatureingaben und setzt entsprechende Werte
+/// </summary>
+/// <param name="xRot">Wert fuer Pitch-Bewegung</param>
+/// <param name="yRot">Wert fuer Yaw-Bewegung</param>
+/// <param name="zRot">Wert fuer Roll-Bewegung</param>
+/// <param name="drive">Ob Schlitten faehrt</param>
 void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& drive) {
 	if (glfwGetKey(this->pWindow, GLFW_KEY_W)) { xRot = 1.2; }
 	if (glfwGetKey(this->pWindow, GLFW_KEY_S)) { xRot = -1.2; }
@@ -239,6 +263,9 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& dri
 	if(glfwGetKey(this->pWindow, GLFW_KEY_O)) { this->option = true; }
 }
 
+/// <summary>
+/// Sammlung der Textaufrufe. Diese geschehen teilweise nur unter bestimmten Bedingungen.
+/// </summary>
 void Application::showTexts() {
 	double currentTime = glfwGetTime();
 	double durationOption = currentTime - this->startTime;
@@ -258,6 +285,9 @@ void Application::showTexts() {
 	this->showPoints();
 }
 
+/// <summary>
+/// Erzeugt einen weissen Text am oberen Linken Bildschirmrand mit der aktuellen Punktezahl.
+/// </summary>
 void Application::showPoints() {
 	std::string text = "Punkte: ";
 	text += std::to_string(this->points);
@@ -270,6 +300,9 @@ void Application::showPoints() {
 	this->text.renderText(Cam, text, left, top, 1.0f, color);
 };
 
+/// <summary>
+/// Erzeugt schwarzen Text am unteren linken Bildschirmrand, der die Steuerung angibt.
+/// </summary>
 void Application::showKeyBindings() {
 	float left = -1 * (this->windowWidth / 2 - 20);
 	float bottom = -1 * (this->windowHeight / 2);
@@ -283,6 +316,9 @@ void Application::showKeyBindings() {
 	this->text.renderText(Cam, "Stern schiessen: R", left, bottom + 20, 1.0f, color);
 }
 
+/// <summary>
+/// Erzeugt einen roten italic Text am oberen rechten Bildschirmrand, mit Todes-Information.
+/// </summary>
 void Application::showPointDeduction() {
 	std::string text = "Du bist gestorben";
 	float right = this->windowWidth / 2 - 250;
@@ -292,17 +328,10 @@ void Application::showPointDeduction() {
 	this->textDied.renderText(Cam, text, right, top, 1.0f, color);
 }
 
-// https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
-Matrix Application::randomTranslation() {
-	Matrix m;
-	std::random_device dev;
-	std::mt19937 rng(dev());
-	std::uniform_real_distribution<float> distReal30(-30, 30);
-	std::uniform_int_distribution<std::mt19937::result_type> distPositive30(8, 30);
-
-	return Matrix().translation((float)distReal30(rng), (float)distPositive30(rng), (float)distReal30(rng));
-}
-
+/// <summary>
+/// Debugmethode zum Zeichnen der Boundingbox.
+/// </summary>
+/// <param name="box">Boundingbox</param>
 void Application::drawBoundingBox(AABB box) {
 	float width = box.Max.X - box.Min.X;
 	float height = box.Max.Y - box.Min.Y;
@@ -316,38 +345,26 @@ void Application::drawBoundingBox(AABB box) {
 	this->Models.push_back(pModel);
 }
 
-bool Application::checkCollision(BaseModel* sleigh, BaseModel* model_b) {
-	AABB bbox_sleigh = sleigh->boundingBox();
+/// <summary>
+/// Kollisionserkennung zwischen zwei Modellen, anhand der Boundingboxen.
+/// </summary>
+/// <param name="model_a">Model eins</param>
+/// <param name="model_b">Model zwei</param>
+/// <returns></returns>
+bool Application::checkCollision(BaseModel* model_a, BaseModel* model_b) {
+	AABB bbox_a = model_a->boundingBox();
 	AABB bbox_b = model_b->boundingBox();
-	bbox_sleigh = bbox_sleigh.transform(sleigh->transform());
+	bbox_a = bbox_a.transform(model_a->transform());
 	bool collision = false;
 
 	Vector minB = bbox_b.Min;
 	Vector maxB = bbox_b.Max;
-	Vector minS = bbox_sleigh.Min;
-	Vector maxS = bbox_sleigh.Max;
+	Vector minS = bbox_a.Min;
+	Vector maxS = bbox_a.Max;
 
-	if ( (bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
-		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
-		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
-		collision = true;
-	}
-	return collision;
-}
-
-bool Application::checkGiftCollision(BaseModel* sleigh, BaseModel* model_b) {
-	AABB bbox_sleigh = sleigh->boundingBox();
-	AABB bbox_b = model_b->boundingBox();
-	bool collision = false;
-
-	Vector minB = bbox_b.Min;
-	Vector maxB = bbox_b.Max;
-	Vector minS = bbox_sleigh.Min;
-	Vector maxS = bbox_sleigh.Max;
-
-	if ((bbox_sleigh.Max.X >= bbox_b.Min.X && bbox_sleigh.Min.X <= bbox_b.Max.X)
-		&& (bbox_sleigh.Max.Y >= bbox_b.Min.Y && bbox_sleigh.Min.Y <= bbox_b.Max.Y)
-		&& (bbox_sleigh.Max.Z >= bbox_b.Min.Z && bbox_sleigh.Min.Z <= bbox_b.Max.Z)) {
+	if ( (bbox_a.Max.X >= bbox_b.Min.X && bbox_a.Min.X <= bbox_b.Max.X)
+		&& (bbox_a.Max.Y >= bbox_b.Min.Y && bbox_a.Min.Y <= bbox_b.Max.Y)
+		&& (bbox_a.Max.Z >= bbox_b.Min.Z && bbox_a.Min.Z <= bbox_b.Max.Z)) {
 		collision = true;
 	}
 	return collision;

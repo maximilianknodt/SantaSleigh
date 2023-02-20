@@ -16,11 +16,20 @@ SantaSleigh::SantaSleigh() {
 	this->acceleration = 10.0;
 }
 
+/// <summary>
+/// Loescht die Modelle
+/// </summary>
 SantaSleigh::~SantaSleigh() {
 	delete this->sleigh;
 	delete this->deer;
 }
 
+/// <summary>
+/// Laedt die beiden Modelle und fuegt den Shader hinzu.
+/// </summary>
+/// <param name="sleigh">Dateipfad</param>
+/// <param name="deer">Dateipfad</param>
+/// <returns>True, wenn Laden erfolreich war.</returns>
 bool SantaSleigh::loadModels(const char* sleigh, const char* deer) {
 	this->deer->shader(new PhongShader(), true);
 	this->deer->load(deer, true);
@@ -33,6 +42,13 @@ bool SantaSleigh::loadModels(const char* sleigh, const char* deer) {
 	return true;
 }
 
+/// <summary>
+/// Setzt die Werte fuer die Stuerungsbewegungen.
+/// </summary>
+/// <param name="upDown">Pitch</param>
+/// <param name="leftRight">Yaw</param>
+/// <param name="shift">Roll</param>
+/// <param name="drive">in Bewegung</param>
 void SantaSleigh::steer(float upDown, float leftRight, float shift, bool drive) {
 	this->upDown = upDown;
 	this->leftRight = leftRight;
@@ -40,11 +56,18 @@ void SantaSleigh::steer(float upDown, float leftRight, float shift, bool drive) 
 	this->drive = drive;
 }
 
+/// <summary>
+/// Setzt den SantaSleigh an den Ursprung zurueck.
+/// </summary>
 void SantaSleigh::reset() {
 	this->transform(Matrix().translation(this->startPos));
 	this->setSpeed(0.0f);
 }
 
+/// <summary>
+/// Transformiert die Modelmatrizen anhand der Steuerbewegungen.
+/// </summary>
+/// <param name="dtime">Zeit zwischen zwei Frames</param>
 void SantaSleigh::update(float dtime) {
 	Matrix mYPR, mForward, matrix;
 
@@ -62,6 +85,11 @@ void SantaSleigh::update(float dtime) {
 	this->sleigh->transform(transform());
 }
 
+/// <summary>
+/// Veraendert die Bewegungsgeschwindigkeit des Schlittens anhand der vertikalen Ausrichtung.
+/// </summary>
+/// <param name="forwardY">Ausrichtungswert</param>
+/// <param name="dtime">Zeit zwischen zwei Frames</param>
 void SantaSleigh::upgradeSpeed(float forwardY, float dtime) {
 	float gravity = this->fakeGravityInfluence(forwardY);
 
@@ -77,6 +105,11 @@ void SantaSleigh::upgradeSpeed(float forwardY, float dtime) {
 	}
 }
 
+/// <summary>
+/// Ermittelt einen "Gravitationseinfluss" je nach vertikaler Ausrichtung.
+/// </summary>
+/// <param name="forwardY">Ausrichtungswert</param>
+/// <returns></returns>
 float SantaSleigh::fakeGravityInfluence(float forwardY) {
 	float gravity = 0.0;
 	float fy = abs(forwardY);
@@ -92,20 +125,19 @@ float SantaSleigh::fakeGravityInfluence(float forwardY) {
 	return gravity;
 }
 
+/// <summary>
+/// Zeichnet die Modelle
+/// </summary>
+/// <param name="cam">BaseCamera</param>
 void SantaSleigh::draw(const BaseCamera& cam) {
 	this->sleigh->draw(cam);
 	this->deer->draw(cam);
 }
 
-// ggf. fuer weichere Camerabewegung nutzbar
+/// <summary>
+/// Gibt die Position zurueck.
+/// </summary>
+/// <returns>Position.</returns>
 Vector SantaSleigh::getPosition() {
 	return this->transform().translation();
-}
-
-Vector SantaSleigh::getLastPosition() {
-	return this->lastPos;
-}
-
-void SantaSleigh::setLastPosition(const Vector lastPos) {
-	this->lastPos = lastPos;
 }
