@@ -37,10 +37,10 @@ int main()
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
 
-    //WindowWidth = videoMode->width;
-    //WindowHeight = videoMode->height;
+    WindowWidth = videoMode->width;
+    WindowHeight = videoMode->height;
 
-    GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", monitor, NULL);
 
     if (!window){
         fprintf(stderr, "ERROR: can not open window with GLFW3\n");
@@ -62,8 +62,8 @@ int main()
         App.start();
         while (!glfwWindowShouldClose(window)) {
             // Nur fuer das Testen, um per ESC aus dem Fullscreen rauszukommen, nicht funktionsfaehig
-            int width = 1200;
-            int height = 800;
+            int width = 1280;
+            int height = 720;
             if (glfwGetKey(window, GLFW_KEY_ESCAPE)) {
                 glfwSetWindowMonitor(window, NULL, 0, 0, width, height, GLFW_DONT_CARE);
                 glfwGetFramebufferSize(window, &width, &height);
