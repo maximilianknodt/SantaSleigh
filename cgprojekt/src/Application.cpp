@@ -47,7 +47,11 @@ Application::Application(GLFWwindow* pWin, float wWidth, float wHeight) :
 	windowWidth(wWidth),
 	windowHeight(wHeight),
 	text(Cam, windowWidth, windowHeight),
-	points(0)
+	points(0),
+	startTime(0),
+	deductionTime(0),
+	option(false),
+	pointDeduction(false)
 {
 	createScene();
 	this->text.loadFont(ASSET_DIRECTORY "fonts/OpenSans-Medium.ttf", 24);
@@ -58,14 +62,14 @@ void Application::createScene() {
 	this->pSky = new Model(ASSET_DIRECTORY "skybox.obj", false);
 	this->pSky->shader(new PhongShader(), true);
 	this->pSky->shadowCaster(false);
-	this->pSky->transform(pSky->transform() * Matrix().scale(1));
+	this->pSky->transform(pSky->transform() * Matrix().scale(1.5));
 	this->pSky->transformBoundingBox(this->pSky->transform());
 	Models.push_back(pSky);
 
 	this->pGround = new Model(ASSET_DIRECTORY "buildings/Ground.obj", false);
 	this->pGround->shader(new PhongShader(), true);
 	this->pGround->shadowCaster(false);
-	this->pGround->transform(pGround->transform() * Matrix().scale(2));
+	this->pGround->transform(pGround->transform() * Matrix().scale(3));
 	this->pGround->transformBoundingBox(this->pGround->transform());
 	Models.push_back(pGround);
 
@@ -82,7 +86,7 @@ void Application::createScene() {
 	// buildings.push_back(ASSET_DIRECTORY "buildings/Massachussetshall/Massachussetshall.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/FairyTower/FairyTower.obj");
 	buildings.push_back(ASSET_DIRECTORY "buildings/Residential_House/Residential_House.obj");
-	this->pCity->loadModels(buildings, 5, 5, 25);
+	this->pCity->loadModels(buildings, 5, 5, 40);
 	Models.push_back(pCity);
 
 	this->pSantaSleigh = new SantaSleigh();
@@ -95,6 +99,8 @@ void Application::createScene() {
 		* Matrix().translation(this->pSantaSleigh->getStartPos()));
 	Models.push_back(pSantaSleigh);
 	this->pGiftTravel = MAX_TRAVEL_DIST;
+
+	this->startTime = glfwGetTime();
 }
 
 void Application::start() {
@@ -137,12 +143,16 @@ void Application::update(float dtime) {
 		model->update(dtime);
 		if (this->checkCollision(this->pSantaSleigh->sleigh, model->building)) {
 			this->pSantaSleigh->reset();
+			this->pointDeduction = true;
+			this->deductionTime = glfwGetTime();
 		}
 	}
 
 	if (this->checkCollision(this->pSantaSleigh->sleigh, this->pGround) 
 		|| !this->checkCollision(this->pSantaSleigh->sleigh, this->pSky)) {
 		this->pSantaSleigh->reset();
+		this->pointDeduction = true;
+		this->deductionTime = glfwGetTime();
 	}
 
 	if (glfwGetKey(this->pWindow, GLFW_KEY_R)) {
@@ -210,7 +220,23 @@ void Application::draw() {
     }
 	ShaderLightMapper::instance().deactivate();
 	
-	this->showText();
+	// show texts
+	double currentTime = glfwGetTime();
+	double durationOption = currentTime - this->startTime;
+	if (this->option) {
+		durationOption = 0;
+		this->startTime = glfwGetTime();
+		this->option = false;
+	}
+	if (durationOption <= 4.5) { this->showKeyBindings(); }
+
+	if (this->pointDeduction) {
+		this->showPointDeduction();
+		double durationDeduction = currentTime - this->deductionTime;
+		if (durationDeduction >= 3.0) { this->pointDeduction = false; }
+	}
+
+	this->showPoints();
 	
     // 3. check once per frame for opengl errors
     GLenum Error = glGetError();
@@ -237,9 +263,11 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& dri
 	if (glfwGetKey(this->pWindow, GLFW_KEY_SPACE)) {
 		drive = true;
 	}
+
+	if(glfwGetKey(this->pWindow, GLFW_KEY_O)) { this->option = true; }
 }
 
-void Application::showText() { 
+void Application::showPoints() {
 	std::string text = "Punkte: ";
 	text += std::to_string(this->points);
 
@@ -250,6 +278,29 @@ void Application::showText() {
 
 	this->text.renderText(Cam, text, left, top, 1.0f, color);
 };
+
+void Application::showKeyBindings() {
+	float left = -1 * (this->windowWidth / 2 - 20);
+	float bottom = -1 * (this->windowHeight / 2);
+	Color color = Color(0.0, 0.0, 0.0);
+
+	this->text.renderText(Cam, "Steuerung anzeigen: O", left, bottom + 170, 1.0f, color);
+	this->text.renderText(Cam, "Pitch: W/S", left, bottom + 140, 1.0f, color);
+	this->text.renderText(Cam, "Roll: A/D", left, bottom + 110, 1.0f, color);
+	this->text.renderText(Cam, "Yaw: Q/E", left, bottom + 80, 1.0f, color);
+	this->text.renderText(Cam, "Beschleunigen: Space", left, bottom + 50, 1.0f, color);
+	this->text.renderText(Cam, "Stern schiessen: R", left, bottom + 20, 1.0f, color);
+}
+
+void Application::showPointDeduction() {
+	std::string text = "Du bist gestorben.";
+	float left = -1 * (this->windowWidth / 2 - 140);
+	float right = this->windowWidth / 2 - 240;
+	float top = (this->windowHeight / 2) - 40;
+	Color color = Color(1.0, 0.1, 0.3);
+
+	this->text.renderText(Cam, text, right, top, 1.0f, color);
+}
 
 // https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
 Matrix Application::randomTranslation() {

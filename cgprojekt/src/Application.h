@@ -36,7 +36,9 @@ public:
     void draw();
     void end();
     Vector calc3DRay(float x, float y, Vector& Pos);
-    void showText();
+    void showPoints();
+    void showKeyBindings();
+    void showPointDeduction();
 
 protected:
 	void createScene();
@@ -51,6 +53,10 @@ protected:
     int points;
     float windowWidth;
     float windowHeight;
+    double startTime;
+    double deductionTime;
+    bool option;
+    bool pointDeduction;
 
     Camera Cam;
     ModelList Models;
