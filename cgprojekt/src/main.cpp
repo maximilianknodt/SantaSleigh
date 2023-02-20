@@ -37,10 +37,10 @@ int main()
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode *videoMode = glfwGetVideoMode(monitor);
 
-    WindowWidth = videoMode->width;
-    WindowHeight = videoMode->height;
+    //WindowWidth = videoMode->width;
+    //WindowHeight = videoMode->height;
 
-    GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", monitor, NULL);
+    GLFWwindow *window = glfwCreateWindow(WindowWidth, WindowHeight, "CG_Projekt - Kirkesler, Knodt", NULL, NULL);
 
     if (!window){
         fprintf(stderr, "ERROR: can not open window with GLFW3\n");
