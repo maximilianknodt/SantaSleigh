@@ -223,22 +223,7 @@ void Application::draw() {
 	ShaderLightMapper::instance().deactivate();
 	
 	// show texts
-	double currentTime = glfwGetTime();
-	double durationOption = currentTime - this->startTime;
-	if (this->option) {
-		durationOption = 0;
-		this->startTime = glfwGetTime();
-		this->option = false;
-	}
-	if (durationOption <= 4.5) { this->showKeyBindings(); }
-
-	if (this->pointDeduction) {
-		this->showPointDeduction();
-		double durationDeduction = currentTime - this->deductionTime;
-		if (durationDeduction >= 3.0) { this->pointDeduction = false; }
-	}
-
-	this->showPoints();
+	this->showTexts();
 	
     // 3. check once per frame for opengl errors
     GLenum Error = glGetError();
@@ -267,6 +252,25 @@ void Application::keyboardInput(float& xRot, float& yRot, float& zRot, bool& dri
 	}
 
 	if(glfwGetKey(this->pWindow, GLFW_KEY_O)) { this->option = true; }
+}
+
+void Application::showTexts() {
+	double currentTime = glfwGetTime();
+	double durationOption = currentTime - this->startTime;
+	if (this->option) {
+		durationOption = 0;
+		this->startTime = glfwGetTime();
+		this->option = false;
+	}
+	if (durationOption <= 4.5) { this->showKeyBindings(); }
+
+	if (this->pointDeduction) {
+		this->showPointDeduction();
+		double durationDeduction = currentTime - this->deductionTime;
+		if (durationDeduction >= 3.0) { this->pointDeduction = false; }
+	}
+
+	this->showPoints();
 }
 
 void Application::showPoints() {

@@ -36,6 +36,7 @@ public:
     void draw();
     void end();
     Vector calc3DRay(float x, float y, Vector& Pos);
+    void showTexts();
     void showPoints();
     void showKeyBindings();
     void showPointDeduction();
